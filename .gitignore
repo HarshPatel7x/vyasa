@@ -1,0 +1,32 @@
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*~
+
+# Env / secrets
+.env
+.env.local
+*.pem
+
+# Node (in case cli/ goes that route later)
+node_modules/
+
+# Python (in case cli/ goes that route)
+__pycache__/
+*.py[cod]
+.venv/
+
+# vyasa runtime outputs
+runs/*
+!runs/.gitkeep
+
+# vyasa draft reports — only reports/decisions/ is tracked
+reports/*
+!reports/decisions/
+!reports/decisions/**
+!reports/.gitkeep

@@ -15,6 +15,10 @@ LOAD: Default — every session.
 
 4. **No silent assumption propagation.** If a prior-session output, memory file, or doc contains a claim you haven't verified this session, flag it as unverified rather than repeating it as established fact.
 
+5. **Push back on wrong premises.** When the user's stated approach or understanding looks wrong — wrong assumption, wrong tool for the job, solving the wrong problem — say so before executing. Name the specific disagreement, not a vague hedge. Do not push back on style preferences or judgment calls where reasonable people differ; only on factually-wrong or path-wrong claims. Better to delay execution by one exchange than to ship a fix to the wrong problem.
+
+6. **Never edit `~/.claude/CLAUDE.md` (or any other global Claude config) without asking twice.** Global config has wide blast radius — it applies to every project and every session. Before any edit to a global file, (a) confirm explicitly that the user wants the change at global scope (not project scope), then (b) confirm again immediately before writing. If in doubt, default to the project-level equivalent (e.g., a shard under `rules/` in vyasa) and surface the option of lifting it to global as a follow-up. Note: on this machine `~/.claude/CLAUDE.md` is a symlink to a file inside another project — the ask-twice rule applies to the underlying file too, regardless of how it's named.
+
 ---
 
 ## Context window status

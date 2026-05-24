@@ -183,6 +183,16 @@ Every structural call made during scoping, with reasoning. Read top-to-bottom fo
 
 The operational details (when to gloss, what counts as a technical artifact, how the end-of-response recap interacts with this rule) live in `rules/voice.md`. This entry records the project-level decision.
 
+### D15. Workitems checklist, branch-per-workitem, README-everywhere conventions
+**Decision:** Three structural moves bundled in one pass:
+1. `WORKITEMS.md` lives at the project root as the source-of-truth checklist for queued work. New default-load shard `rules/workitems.md` captures the convention.
+2. When a workitem is checked off, it gets its own git branch named after it (with a "trivially small items may bundle by explicit decision" exception). Bootstrap caveat: until PR / commit-message / PR-description conventions land (itself a queued workitem), best-effort + direct commits to `main` are acceptable.
+3. Every directory or project under this tree carries a `README.md`. New default-load shard `rules/readme-convention.md` captures the rule. Project-scope only for now; may lift to global later.
+
+Companion behavioral additions (in `rules/hygiene.md`, items 5–6): a **push-back-on-wrong-premises** rule and a **never-edit-global-CLAUDE.md-without-asking-twice** rule. Both rules were also lifted to global `~/.claude/CLAUDE.md` in this same pass — a rule about engagement style only works if every session sees it. Discovery during execution: `~/.claude/CLAUDE.md` is a symlink to `~/Desktop/Harsh/harsh-brain/CLAUDE.md`, so the "global" write actually lands inside the `harsh-brain` project. The new ask-twice rule (which we were installing) fired on its own first use, paused the global write, and the user re-confirmed before the write went through. The global file now carries a footnote noting the symlink so future sessions are not surprised.
+
+**Why:** Conversation scrollback is unreliable for tracking queued work — agreed items vanish between sessions. A persistent checklist closes that gap. Branch-per-workitem keeps commits scoped to one logical unit and supports clean rollback. README-everywhere keeps per-directory context co-located instead of scattering it across project-level docs. The hygiene additions close two ways the assistant was previously executing on autopilot — accepting wrong premises and making wide-blast-radius global edits without pause.
+
 ---
 
 ## How to use vyasa (future state)

@@ -6,6 +6,9 @@
 
 ---
 
+- [2026-05-24-workitems-pushback-and-readme-conventions.md](2026-05-24-workitems-pushback-and-readme-conventions.md) — Added WORKITEMS.md + branch-per-workitem + README-everywhere conventions (D15); hygiene items 5 (push-back) and 6 (ask-twice-global) added project + lifted to global.
+  Six file ops in vyasa + one in harsh-brain/CLAUDE.md via the global symlink; five workitems queued. Ask-twice rule fired on its own first use and surfaced that `~/.claude/CLAUDE.md` is a symlink into harsh-brain.
+
 - [2026-05-24-rules-sharding-and-voice.md](2026-05-24-rules-sharding-and-voice.md) — Sharded project rules into `rules/INDEX.md` + 6 shards; trimmed `CLAUDE.md` to 18 lines; added D13 (shardable-domain pattern + README-sharding recipe) and D14 (dummy-language voice).
   User's coffee-machine reframe locked the design: opt-in control is the win, not byte savings. The uniform folder-per-domain + INDEX.md pattern now applies to `rules/`, already-in-place `notes/`, and a future `docs/` if `README.md` is ever sharded.
 

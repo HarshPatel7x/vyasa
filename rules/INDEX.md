@@ -9,9 +9,11 @@
 
 Read these three before responding to anything. Each shard opens with a `WHAT:` / `LOAD:` header.
 
-- [hygiene.md](hygiene.md) — Honesty, verification, no fabricated confidence, context-window awareness.
+- [hygiene.md](hygiene.md) — Honesty, verification, no fabricated confidence, context-window awareness, push-back on wrong premises, ask-twice gate before editing global config.
 - [voice.md](voice.md) — Dummy-language voice as project default; end-of-response 3-line recap.
 - [island.md](island.md) — vyasa is an island: no harsh-brain wiring; no skill-based scaffolding; README is the bible.
+- [workitems.md](workitems.md) — `WORKITEMS.md` checklist convention; one branch per checked-off workitem.
+- [readme-convention.md](readme-convention.md) — Every directory or project carries a `README.md`.
 
 ---
 

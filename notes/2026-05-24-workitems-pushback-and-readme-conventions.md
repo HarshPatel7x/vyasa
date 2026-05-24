@@ -68,7 +68,7 @@ So "global" is not a standalone file — it lives inside the `harsh-brain` proje
 
 The new global rule itself carries a footnote noting the symlink so future sessions are not surprised by the same discovery.
 
-**Side note:** harsh-brain has an auto-sync that commits and pushes every ~10 min ("Auto-sync 2026-05-24 HH:MM" commits). The explicit commit landed before any auto-sync ran, so the change carries a meaningful message instead of being absorbed silently.
+**Side note — race condition lost to auto-sync:** harsh-brain has an auto-sync that commits and pushes every ~10 min ("Auto-sync 2026-05-24 HH:MM" commits). The auto-sync ran *before* the explicit commit attempt could fire — it absorbed CLAUDE.md (along with its own sync.log and memories/infra-status.md changes) into commit `b2eb704 Auto-sync 2026-05-24 18:58`. The explicit `git commit -F /tmp/...` then failed with "no changes added to commit" because the file was already at HEAD. Net result: the rules ARE live in global and on origin/main, but under a generic auto-sync commit message rather than the meaningful one drafted. Lesson worth remembering: when editing files in repos with active auto-commit hooks, race conditions are real — commit immediately after editing, or expect the housekeeping to win.
 
 ---
 

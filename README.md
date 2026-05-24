@@ -32,9 +32,18 @@ The project's job description IS that translation: take messy raw skill outputs 
 
 ```
 vyasa/
-├── CLAUDE.md                    # rulebook — self-contained, includes universal + project-specific rules
+├── CLAUDE.md                    # thin entry point — points at rules/INDEX.md
 ├── README.md                    # this file — full project bible + decisions log
 ├── .gitignore                   # ignores runs/, draft reports, OS junk
+│
+├── rules/                       # sharded project rules (router + shards)
+│   ├── INDEX.md                 # router: which shards load when
+│   ├── hygiene.md               # default-load: honesty, verification, context status
+│   ├── voice.md                 # default-load: dummy-language voice + recap
+│   ├── island.md                # default-load: no harsh-brain wiring; no skill scaffolding; README is bible
+│   ├── session-end-notes.md     # triggered: session end with decision/plan/build/learn
+│   ├── skill-snapshot.md        # triggered: bringing a skill under test
+│   └── readme-decisions-log.md  # triggered: a structural decision is made or changed
 │
 ├── notes/                       # session lecture-notes (newest-first index)
 │   ├── INDEX.md
@@ -66,8 +75,11 @@ vyasa/
 
 ## What each component is, and why
 
-### `CLAUDE.md` — the rulebook
-Why it's here: every Claude Code session in this directory needs to know the rules of engagement, even after a context wipe. Self-contained so the project is portable; mirrors universal hygiene from `~/.claude/CLAUDE.md` plus adds project-specific rules.
+### `CLAUDE.md` — the thin entry point
+Why it's here: every Claude Code session in this directory needs a starting instruction. The actual project rules live as shards under `rules/`; `CLAUDE.md` just says "read `rules/INDEX.md` and follow it." Keeps the auto-loaded file tiny and signals at the top of context that the rules are modular. The one rule that DOES live in `CLAUDE.md` itself is the folder-per-domain + `INDEX.md` routing convention — because that convention describes how every other rule is organized, it has to be known before any of them.
+
+### `rules/`
+Why it's here: project rules are sharded by concern rather than lumped into one rulebook. `rules/INDEX.md` is the router; each shard handles one concern (`voice.md`, `hygiene.md`, `island.md`, …). Three wins: (1) **opt-in control** — even rules currently always loaded can be skipped on specific sessions without restructuring the project (coffee-machine analogy: milk is a separate pour even if you take it every cup); (2) **uniform pattern** — same shape as `notes/` and any future sharded domain like `docs/`; (3) **cleaner top-of-context signal** — `CLAUDE.md` becomes a 6-line directive instead of a thick wall of rules.
 
 ### `notes/`
 Why it's here: chat transcripts are unreadable later. Lecture/meeting-minutes notes are. After every significant session (decision/plan/advice/built/learnt), the assistant prompts to write a notes file capturing what was decided + why. `INDEX.md` makes the folder navigable — without an index, the folder is a graveyard.
@@ -140,6 +152,36 @@ Every structural call made during scoping, with reasoning. Read top-to-bottom fo
 ### D12. Edit to global `~/.claude/CLAUDE.md`: "plain-English" → "dummy-level English"
 **Decision:** Renamed the recap rule's wording in the global file so end-of-response recaps come out beginner-friendly across all projects, not just vyasa.
 **Why:** User wants beginner-friendly explanations as a general preference, not project-specific. One file edit gives it everywhere. Complementary: in-session jargon-defining/analogies are saved separately in user memory (`feedback_dummy_level_explanations.md`).
+
+### D13. Shardable-domain pattern: folder + `INDEX.md` routing
+**Decision:** Every shardable domain lives in its own folder with an `INDEX.md` router inside. Top-level files (`CLAUDE.md`, `README.md`) stay thin and point at the relevant `INDEX.md`. Applied today to `rules/`; **ready to apply to `README.md`** in a future session (the recipe is below).
+**Why:** Two wins. (1) **Opt-in control** — even rules currently always loaded can be skipped on a given session without restructuring (coffee-machine analogy: milk is a separate pour even if you take it every cup). (2) **Uniform pattern** — once you know how `rules/` is shaped, you know how any future domain will be shaped. As a side benefit, `CLAUDE.md` shrank from a thick rulebook to a 6-line directive, which is much better signal at the top of every session's context.
+
+**How `rules/` is organized today:**
+- Default-load shards (loaded every session): `hygiene.md`, `voice.md`, `island.md`
+- Triggered shards (loaded only when relevant): `session-end-notes.md`, `skill-snapshot.md`, `readme-decisions-log.md`
+- `rules/INDEX.md` is the router that lists which loads when
+
+**Recipe for next session — sharding `README.md`:**
+
+1. Create a `docs/` folder at the project root.
+2. Move each section of `README.md` into its own shard:
+   - `docs/what-it-is.md` (the "What it is" section)
+   - `docs/why.md` (the "Why it exists" section)
+   - `docs/name.md` (the "Why the name 'vyasa'" section)
+   - `docs/structure.md` (the "Project structure" tree + "What each component is" subsections)
+   - `docs/provenance.md` (the "Provenance" section)
+3. Move the decisions log into individual files under `docs/decisions/`, one per decision: `docs/decisions/D01-no-skill-scaffolding.md` through `docs/decisions/D14-dummy-language-voice.md` (and beyond as new decisions are added). Add `docs/decisions/INDEX.md` as a sub-router listing them in order.
+4. Create `docs/INDEX.md` as the top-level router for `docs/`, pointing at the section shards and at `docs/decisions/INDEX.md`.
+5. Trim `README.md` to a thin entry point: a short identity paragraph plus "see [`docs/INDEX.md`](docs/INDEX.md) for the full project bible."
+6. Update `CLAUDE.md` if needed so any reference to "see README.md" becomes "see `docs/INDEX.md`" (currently no such reference exists — included as a checklist item just in case).
+7. Append a new decision entry (next D-number, would be D15 or later depending on what's happened in between) recording the move.
+
+### D14. Dummy-language voice as project default
+**Decision:** Default prose voice in this project is plain English. Technical artifacts (file paths, commands, JSON, code blocks) stay literal. Any term introduced in prose gets glossed on first use in the session — e.g., "hook (a script that Claude Code runs automatically at certain moments)" the first time, "hook" after.
+**Why:** vyasa is being used as a learning vehicle for AI. The user's stated principle: *to learn more about AI is to use it more.* The conversation itself is part of the learning surface, so over-jargon defeats the project's pedagogical purpose. Tradeoff accepted: explanations get longer, not shorter — clarity-for-learner beats terseness.
+
+The operational details (when to gloss, what counts as a technical artifact, how the end-of-response recap interacts with this rule) live in `rules/voice.md`. This entry records the project-level decision.
 
 ---
 

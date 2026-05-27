@@ -11,6 +11,19 @@ LOAD: Default — every session.
 
 When the user agrees to a new piece of work (a fix, a feature, a refactor, a rule, a hook), append it to the **Open** section of `WORKITEMS.md` before moving on. Do not rely on memory or scrollback for queued work — if it isn't written down, it doesn't exist.
 
+## Every workitem gets logged — shipped-on-the-fly or deferred
+
+Decided 2026-05-27.
+
+Any piece of agreed work must end up in `WORKITEMS.md`, regardless of whether it's done immediately or queued for later:
+
+- **Deferred work** → append to **Open** (existing rule above).
+- **Shipped-on-the-fly work** (agreed and completed in the same exchange) → append directly to **Closed** with the branch/commit that delivered it, so the audit trail is complete.
+
+The motivation is symmetry: `WORKITEMS.md` is the project's record-and-reminder ledger. If shipped-immediately work skips the ledger, the ledger silently loses fidelity over time and "what got done" can only be reconstructed from `git log`. Treat the ledger as authoritative for *every* agreed change, not just queued ones.
+
+The act of writing this rule is itself the first example: see `WORKITEMS.md` Closed entry dated 2026-05-27.
+
 ## One branch per checked-off workitem
 
 When you complete a workitem:

@@ -12,4 +12,4 @@
 
 ## Closed
 
-_(none yet)_
+- [x] **Log every workitem — shipped-on-the-fly or deferred (2026-05-27).** Extended `rules/workitems.md` with a new section requiring that any agreed work land in `WORKITEMS.md` regardless of whether it's done immediately or queued. Shipped on the fly in-conversation; logged here as the first example of itself.

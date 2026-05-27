@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Blocks direct commits on main.
+# Per rules/git-workflow.md and rules/workitems.md (branch-per-workitem).
+
+set -euo pipefail
+
+current_branch="$(git symbolic-ref --short HEAD 2>/dev/null || echo 'detached')"
+
+if [[ "$current_branch" == "main" ]]; then
+  # Allow merges in progress (e.g., `git pull` creating a merge commit)
+  git_dir="$(git rev-parse --git-dir)"
+  if [[ -f "${git_dir}/MERGE_HEAD" ]]; then
+    exit 0
+  fi
+
+  echo "" >&2
+  echo "✗ pre-commit hook (rules/git-workflow.md): direct commits to 'main' are not allowed." >&2
+  echo "  Create a workitem branch first: git checkout -b workitem/<short-name>" >&2
+  echo "  Bypass with --no-verify only with explicit user permission." >&2
+  echo "" >&2
+  exit 1
+fi
+
+exit 0

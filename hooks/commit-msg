@@ -1,0 +1,111 @@
+#!/usr/bin/env bash
+# Validates commit message format per rules/git-workflow.md.
+# Hard-fails the commit on any rule violation.
+
+set -euo pipefail
+
+msg_file="$1"
+
+# Strip git's comment lines and trailing blank lines
+clean_msg="$(grep -v '^#' "$msg_file" | sed -e :a -e '/^$/{$d;N;ba' -e '}')"
+subject="$(echo "$clean_msg" | head -n 1)"
+
+allowed_types_re='feat|fix|docs|refactor|chore|test|eval'
+allowed_scopes_re='rules|notes|readme|workitems|hooks|cli|skills|fixtures|runs|reports'
+
+fail() {
+  echo "" >&2
+  echo "✗ commit-msg hook (rules/git-workflow.md): $1" >&2
+  echo "" >&2
+  echo "  Fix the message and re-run. Bypass with --no-verify only with explicit user permission." >&2
+  echo "" >&2
+  exit 1
+}
+
+# --- Subject: <type>(<scope>)?: <summary> ---
+subject_re="^(${allowed_types_re})(\(([a-z-]+)\))?: [^[:space:]].*"
+if ! [[ "$subject" =~ $subject_re ]]; then
+  fail "subject does not match '<type>(<scope>): <summary>' or type not in {${allowed_types_re//|/, }}.
+  Got: $subject"
+fi
+
+# --- Scope whitelist ---
+if [[ "$subject" =~ ^[a-z]+\(([a-z-]+)\): ]]; then
+  scope="${BASH_REMATCH[1]}"
+  if ! [[ "$scope" =~ ^(${allowed_scopes_re})$ ]]; then
+    fail "scope '$scope' is not in {${allowed_scopes_re//|/, }}"
+  fi
+fi
+
+# --- Subject length ≤ 72 (UTF-8 char count) ---
+subject_len="$(printf '%s' "$subject" | perl -CSD -ne 'chomp; print length($_)')"
+if (( subject_len > 72 )); then
+  fail "subject is ${subject_len} chars (max 72): $subject"
+fi
+
+# --- Subject does not end with period ---
+if [[ "$subject" =~ \.$ ]]; then
+  fail "subject ends with a period; drop it"
+fi
+
+# --- Body lines ≤ 100 chars (URL-only lines exempt; UTF-8 char count) ---
+body="$(echo "$clean_msg" | tail -n +2)"
+if [[ -n "$body" ]]; then
+  bad_lines="$(printf '%s' "$body" | perl -CSD -ne '
+    chomp;
+    next if /^\s*$/;
+    next if /^\s*[*-]?\s*https?:\/\//;
+    next if /^[A-Z][A-Za-z][A-Za-z-]*: /;   # standard trailer/footer (Touches:, Closes-workitem:, Signed-off-by:, etc.)
+    if (length($_) > 100) {
+      printf "  line %d (%d chars): %s\n", $., length($_), $_;
+    }
+  ')"
+  if [[ -n "$bad_lines" ]]; then
+    fail "body line(s) exceed 100 chars:
+$bad_lines"
+  fi
+fi
+
+# --- Inline D-code expansion: every D<N> must be followed by ' — ' (em-dash U+2014) ---
+bad_dcodes="$(printf '%s' "$clean_msg" | perl -CSD -ne '
+  chomp;
+  my $line = $_;
+  while ($line =~ /\bD\d+\b/g) {
+    my $rest = substr($line, pos($line));
+    unless ($rest =~ /^\s+\x{2014}/) {
+      printf "  line %d: %s\n", $., $line;
+      last;
+    }
+  }
+')"
+if [[ -n "$bad_dcodes" ]]; then
+  fail "D-code missing inline expansion (must be 'D<N> — <title>', em-dash U+2014 not hyphen):
+$bad_dcodes"
+fi
+
+# --- Touches: D<N> footer correctness ---
+touches_lines="$(printf '%s' "$clean_msg" | grep -E '^Touches: D[0-9]+ — ' || true)"
+if [[ -n "$touches_lines" ]]; then
+  # README.md must be in the staged changes for this commit
+  if ! git diff --cached --name-only | grep -qx 'README.md'; then
+    fail "'Touches: D<N> — …' footer present but README.md is not in this commit's staged changes"
+  fi
+
+  while IFS= read -r line; do
+    if [[ "$line" =~ ^Touches:\ D([0-9]+)\ —\ (.+)$ ]]; then
+      d_num="${BASH_REMATCH[1]}"
+      footer_title="${BASH_REMATCH[2]}"
+      readme_title="$(git show ":README.md" 2>/dev/null | grep -E "^### D${d_num}\. " | head -n 1 | sed -E "s/^### D${d_num}\. //")"
+      if [[ -z "$readme_title" ]]; then
+        fail "footer references D${d_num} but no '### D${d_num}. …' heading exists in staged README.md"
+      fi
+      if [[ "$readme_title" != "$footer_title" ]]; then
+        fail "footer title for D${d_num} does not match README:
+  Footer: ${footer_title}
+  README: ${readme_title}"
+      fi
+    fi
+  done <<< "$touches_lines"
+fi
+
+exit 0

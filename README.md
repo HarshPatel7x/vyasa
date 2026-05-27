@@ -183,6 +183,16 @@ Every structural call made during scoping, with reasoning. Read top-to-bottom fo
 
 The operational details (when to gloss, what counts as a technical artifact, how the end-of-response recap interacts with this rule) live in `rules/voice.md`. This entry records the project-level decision.
 
+### D16. PR / commit-message / PR-description conventions defined + commit validation enforced via hooks
+**Decision:** Three sub-conventions land as the new shard `rules/git-workflow.md`:
+1. Every workitem branch ships via a GitHub PR. Self-merge fine. **No direct commits to `main`.** The "best effort + direct-to-`main` acceptable" bootstrap mode in `D15 — Workitems checklist, branch-per-workitem, README-everywhere conventions` is retired.
+2. Commit messages follow Conventional Commits with a fixed type / scope whitelist, ≤72-char subject, optional body wrapped at ≤100 chars, optional `Closes-workitem:` footer, required `Touches: D<N> — <title>` footer when a structural decision is touched, honor-system `Co-Authored-By:` trailer when AI assisted.
+3. PR descriptions follow a fixed template with `## Summary`, `## Why`, `## Workitem`, `## Decisions touched`, `## Verification`, and `## Followups` sections.
+
+Enforcement: `hooks/commit-msg` and `hooks/pre-commit` (bash, version-controlled under `hooks/`) hard-fail violations at commit time. One-time setup per clone: `git config core.hooksPath hooks`. PR-side enforcement (title + body-section checks via GitHub Actions) is a queued workitem.
+
+**Why:** Without a spec for these surfaces, conventions live only in scrollback and decay. Without enforcement, even written rules slip silently. Bundling spec + enforcement in one pass means the first PR following these rules IS the PR that creates them — closing the loop instead of leaving a permanent escape valve.
+
 ### D15. Workitems checklist, branch-per-workitem, README-everywhere conventions
 **Decision:** Three structural moves bundled in one pass:
 1. `WORKITEMS.md` lives at the project root as the source-of-truth checklist for queued work. New default-load shard `rules/workitems.md` captures the convention.

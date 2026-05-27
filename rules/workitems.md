@@ -35,7 +35,7 @@ When you complete a workitem:
 
 **Sizing exception:** If two or more workitems are trivially small (e.g., typo fixes, one-line config tweaks), they may share a branch — but only by explicit decision in-conversation, not as default. The branch name should then reflect the bundle.
 
-**Bootstrap exception (until PR/commit/branch rules exist):** The PR, commit-message, and PR-description conventions are not yet defined (tracked as a workitem). Until they land, branch-per-workitem applies on a best-effort basis and direct commits to `main` are acceptable when no convention covers the situation.
+Once on a workitem branch, the commit-message and PR-description conventions in `rules/git-workflow.md` apply. Direct commits to `main` are blocked by the pre-commit hook in `hooks/pre-commit`.
 
 ## What does NOT belong in `WORKITEMS.md`
 

@@ -33,3 +33,28 @@ In dummy-level words:
 **Skip the recap only for:** trivial one-liners, direct answers to simple questions, or when the user says "quiet mode."
 
 **Never in the recap:** file paths, tool names, jargon. The recap is the strictest layer of plain-English in any response — even if the rest of the response had to use technical terms, the recap doesn't.
+
+---
+
+## Inline expansion of decision codes
+
+Decision codes (`D1`, `D13`, …) defined in `README.md`'s Decisions log are internal shorthand. They are not self-documenting — a reader who hasn't memorized the log will stall on every bare code.
+
+**Rule:** Every time a D-code is cited — in prose, commit messages, PR titles, PR descriptions, session notes, or any project artifact — expand it inline as:
+
+```
+D<N> — <short title from the README D-entry>
+```
+
+Examples:
+
+- `D13 — shardable-domain pattern: folder + INDEX.md routing`
+- `D15 — workitems checklist, branch-per-workitem, README-everywhere conventions`
+
+**Source of truth:** the short description is the title line of the corresponding `### D<N>. <Short title>` heading in `README.md`'s Decisions log. Copy it verbatim — do not paraphrase or invent — so the codes and their expansions stay aligned with the bible.
+
+**Every mention, not just first:** D-codes commonly appear in artifacts that get read out-of-order or partially (commit logs, PR titles, session-note fragments, search hits). A reader landing mid-artifact still needs the expansion. The verbosity tradeoff is accepted as the cost of self-contained citations.
+
+**When the README D-entry is renamed:** future citations use the new title. Old citations already committed (in commit messages, merged PRs, archived notes) are not retroactively updated — they remain a historical record of what the title was at the time of writing.
+
+**What's not covered:** ranges (e.g., "D1–D5") are not standard usage in this project. If you find yourself wanting to cite a range, expand each code individually or rewrite to cite only the relevant ones.

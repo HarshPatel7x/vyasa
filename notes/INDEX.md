@@ -6,6 +6,9 @@
 
 ---
 
+- [2026-05-28-claude-md-load-research-and-workitems-folder.md](2026-05-28-claude-md-load-research-and-workitems-folder.md) — Researched how Claude Code loads CLAUDE.md (auto-load is compliance-based, @import eager but no token saving, .claude/rules/ paths-scoping is the real lever); decided keep-modular + fix load via SessionStart hook; built the workitems/ folder + plan-before-build gate (D17 — Workitems become a folder; open/done split; plan-before-build gate).
+  Default shards empirically did NOT auto-load this session — proving the read-chain gap. Audit agent caught 3 stale WORKITEMS.md refs in git-workflow.md; git soft-reset kept the old index (needed `git add -A` to re-stage). Shipped via PR #2.
+
 - [2026-05-27-git-workflow-rules-and-hook-enforcement.md](2026-05-27-git-workflow-rules-and-hook-enforcement.md) — Three rules shipped (log-every-workitem, inline D-code expansion, git-workflow conventions) and D16 — PR / commit-message / PR-description conventions defined + commit validation enforced via hooks landed; hooks wired and self-applying via PR #1.
   Bootstrap exception retired the moment its replacement landed. Hook learnings: macOS BSD grep lacks -P (use perl), trailer-tokens hyphenate not space, perl `pos()` follows the variable matched, em-dash U+2014 not hyphen.
 

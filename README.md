@@ -41,9 +41,18 @@ vyasa/
 │   ├── hygiene.md               # default-load: honesty, verification, context status
 │   ├── voice.md                 # default-load: dummy-language voice + recap
 │   ├── island.md                # default-load: no harsh-brain wiring; no skill scaffolding; README is bible
+│   ├── workitems.md             # default-load: workitems/ folder convention + plan-before-build
 │   ├── session-end-notes.md     # triggered: session end with decision/plan/build/learn
 │   ├── skill-snapshot.md        # triggered: bringing a skill under test
 │   └── readme-decisions-log.md  # triggered: a structural decision is made or changed
+│
+├── workitems/                   # the ledger of queued + completed work (folder-per-domain)
+│   ├── INDEX.md                 # router
+│   ├── open.md                  # live queue of pending work (default-load candidate)
+│   ├── done.md                  # archive of completed items (never auto-loaded)
+│   └── plans/                   # one plan per workitem; plan-before-build gate
+│       ├── INDEX.md
+│       └── <slug>.md            # load on demand when you pick up an item
 │
 ├── notes/                       # session lecture-notes (newest-first index)
 │   ├── INDEX.md
@@ -195,13 +204,20 @@ Enforcement: `hooks/commit-msg` and `hooks/pre-commit` (bash, version-controlled
 
 ### D15. Workitems checklist, branch-per-workitem, README-everywhere conventions
 **Decision:** Three structural moves bundled in one pass:
-1. `WORKITEMS.md` lives at the project root as the source-of-truth checklist for queued work. New default-load shard `rules/workitems.md` captures the convention.
+1. `WORKITEMS.md` lives at the project root as the source-of-truth checklist for queued work. New default-load shard `rules/workitems.md` captures the convention. *(Superseded by `D17 — Workitems become a folder; open/done split; plan-before-build gate`: the ledger moved from the root file into the `workitems/` folder.)*
 2. When a workitem is checked off, it gets its own git branch named after it (with a "trivially small items may bundle by explicit decision" exception). Bootstrap caveat: until PR / commit-message / PR-description conventions land (itself a queued workitem), best-effort + direct commits to `main` are acceptable.
 3. Every directory or project under this tree carries a `README.md`. New default-load shard `rules/readme-convention.md` captures the rule. Project-scope only for now; may lift to global later.
 
 Companion behavioral additions (in `rules/hygiene.md`, items 5–6): a **push-back-on-wrong-premises** rule and a **never-edit-global-CLAUDE.md-without-asking-twice** rule. Both rules were also lifted to global `~/.claude/CLAUDE.md` in this same pass — a rule about engagement style only works if every session sees it. Discovery during execution: `~/.claude/CLAUDE.md` is a symlink to `~/Desktop/Harsh/harsh-brain/CLAUDE.md`, so the "global" write actually lands inside the `harsh-brain` project. The new ask-twice rule (which we were installing) fired on its own first use, paused the global write, and the user re-confirmed before the write went through. The global file now carries a footnote noting the symlink so future sessions are not surprised.
 
 **Why:** Conversation scrollback is unreliable for tracking queued work — agreed items vanish between sessions. A persistent checklist closes that gap. Branch-per-workitem keeps commits scoped to one logical unit and supports clean rollback. README-everywhere keeps per-directory context co-located instead of scattering it across project-level docs. The hygiene additions close two ways the assistant was previously executing on autopilot — accepting wrong premises and making wide-blast-radius global edits without pause.
+
+### D17. Workitems become a folder; open/done split; plan-before-build gate
+**Decision:** Two structural moves bundled in one pass, both under the workitems domain:
+1. **`WORKITEMS.md` (single root file) → `workitems/` folder**, following the same folder-per-domain + `INDEX.md` pattern as `rules/` and `notes/` (`D13 — Shardable-domain pattern: folder + INDEX.md routing`). Layout: `workitems/INDEX.md` (router), `workitems/open.md` (live queue — a default-load candidate), `workitems/done.md` (archive of completed items, never auto-loaded), `workitems/plans/` (one plan per workitem, loaded on demand). The root `WORKITEMS.md` is deleted; its open items move to `open.md` and its closed items to `done.md`.
+2. **Plan-before-build gate** added to `rules/workitems.md`: no workitem is implemented without a plan file in `workitems/plans/<slug>.md`, written and agreed before the branch is cut. Open items with no plan show `(no plan)`; planned items link to their plan. Plans are permanent (kept after the item closes). The first real plan shipped alongside this decision is `workitems/plans/sessionstart-load-rules.md` (the queued SessionStart-hook workitem), so the new structure ships with a working example rather than an empty folder.
+
+**Why:** (1) The workitems domain grew from one concern (a checklist) to three (open queue, done archive, per-item plans) — that's the trigger in `D13 — Shardable-domain pattern: folder + INDEX.md routing` for promoting a domain to a folder. Splitting open from done also keeps the live list lean: completed items no longer bury pending work, and if `open.md` is auto-loaded, finished items don't burn context. (2) The plan-before-build gate forces design to precede code, so work starts from a written, agreed plan instead of improvised implementation — and the plan file becomes durable design history. Note on scope tension: `rules/readme-convention.md` says every directory carries a `README.md`, but sharded domains (`rules/`, `notes/`, now `workitems/`) use `INDEX.md` as the entry doc instead; reconciling that wording is a queued workitem, not resolved here.
 
 ---
 

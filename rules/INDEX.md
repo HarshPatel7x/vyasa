@@ -12,7 +12,7 @@ Read these three before responding to anything. Each shard opens with a `WHAT:` 
 - [hygiene.md](hygiene.md) — Honesty, verification, no fabricated confidence, context-window awareness, push-back on wrong premises, ask-twice gate before editing global config.
 - [voice.md](voice.md) — Dummy-language voice as project default; end-of-response 3-line recap.
 - [island.md](island.md) — vyasa is an island: no harsh-brain wiring; no skill-based scaffolding; README is the bible.
-- [workitems.md](workitems.md) — `WORKITEMS.md` checklist convention; one branch per checked-off workitem.
+- [workitems.md](workitems.md) — `workitems/` folder convention: open/done split, plan-before-build gate, one branch per workitem. (The ledger itself lives in [`../workitems/INDEX.md`](../workitems/INDEX.md).)
 - [readme-convention.md](readme-convention.md) — Every directory or project carries a `README.md`.
 - [git-workflow.md](git-workflow.md) — PR, commit-message, and PR-description conventions. Enforced by `hooks/`.
 

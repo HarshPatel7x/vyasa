@@ -1,0 +1,10 @@
+# Workitems — Done
+
+> Archive of completed workitems. **Not loaded** into session context — on-demand only.
+> Items move here from [`open.md`](open.md) on completion; never deleted (this is the audit trail).
+> Convention: [`../rules/workitems.md`](../rules/workitems.md).
+
+- [x] **Workitems become a folder + plan-before-build gate (2026-05-28).** Promoted the root `WORKITEMS.md` into the `workitems/` folder (`open.md`, `done.md`, `plans/`, `INDEX.md`), added the plan-before-build gate to `rules/workitems.md`, and shipped the first plan (`plans/sessionstart-load-rules.md`). Branch `workitem/workitems-folder-and-plan-rule`. See `D17 — Workitems become a folder; open/done split; plan-before-build gate`.
+- [x] **Log every workitem — shipped-on-the-fly or deferred (2026-05-27).** Extended `rules/workitems.md` with a new section requiring that any agreed work land in the workitems ledger regardless of whether it's done immediately or queued. Shipped on the fly in-conversation; logged here as the first example of itself.
+- [x] **Inline decision-code expansion (2026-05-27).** Extended `rules/voice.md` with an "Inline expansion of decision codes" section: every D-code citation (in prose, commits, PRs, notes) must be expanded inline as `Dxx — short title from README` on every mention, sourced verbatim from the README D-entry title.
+- [x] **Define PR, commit-message, and PR-description conventions (2026-05-27).** Shipped `rules/git-workflow.md` with three sub-conventions, `hooks/commit-msg` + `hooks/pre-commit` for hard enforcement, `hooks/README.md` with setup instructions. Retired the bootstrap exception in `rules/workitems.md`. Added `D16 — PR / commit-message / PR-description conventions defined + commit validation enforced via hooks` to `README.md`. Queued followup workitem for PR-side CI enforcement.

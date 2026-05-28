@@ -41,7 +41,7 @@ Standard: Conventional Commits with vyasa-specific scopes. Enforced by `hooks/co
 
 Footers follow standard git trailer syntax: `<Token>: <value>` where `<Token>` is a single CamelCase or hyphenated word (no spaces). The hook exempts any line matching this shape from the body line-length cap.
 
-- **`Closes-workitem: <verbatim bullet text from WORKITEMS.md>`** — optional on individual commits; required at PR level via the `## Workitem` section of the PR description.
+- **`Closes-workitem: <verbatim bullet text from workitems/open.md (or workitems/done.md)>`** — optional on individual commits; required at PR level via the `## Workitem` section of the PR description.
 - **`Touches: D<N> — <title verbatim from README>`** — required when the commit creates or modifies a structural decision in `README.md`'s Decisions log. The hook verifies that `README.md` is in the commit AND that the footer's title exactly matches the heading title for `D<N>` in the staged `README.md`.
 
 ### `Co-Authored-By` trailer (honor system)
@@ -68,7 +68,7 @@ Same shape as a commit subject: `<type>(<scope>): <summary>`. Single-commit PR �
 <1–3 bullets — why this change is being made; motivation, not mechanics>
 
 ## Workitem
-<verbatim quote(s) of the WORKITEMS.md line(s) this closes>
+<verbatim quote(s) of the workitems/ ledger line(s) this closes — from workitems/open.md or workitems/done.md>
 
 ## Decisions touched
 <list of `D<N> — title-verbatim-from-README`, or "none">
@@ -77,7 +77,7 @@ Same shape as a commit subject: `<type>(<scope>): <summary>`. Single-commit PR �
 <for rules: "self-applies from <date>"; for code: tests added or manual steps to confirm>
 
 ## Followups
-<verbatim WORKITEMS.md bullets for any new items this work created, or "none">
+<verbatim workitems/open.md bullets for any new items this work created, or "none">
 ```
 
 ## What gets enforced vs honor-system

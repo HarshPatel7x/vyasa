@@ -6,6 +6,9 @@
 
 ---
 
+- [2026-05-27-git-workflow-rules-and-hook-enforcement.md](2026-05-27-git-workflow-rules-and-hook-enforcement.md) — Three rules shipped (log-every-workitem, inline D-code expansion, git-workflow conventions) and D16 — PR / commit-message / PR-description conventions defined + commit validation enforced via hooks landed; hooks wired and self-applying via PR #1.
+  Bootstrap exception retired the moment its replacement landed. Hook learnings: macOS BSD grep lacks -P (use perl), trailer-tokens hyphenate not space, perl `pos()` follows the variable matched, em-dash U+2014 not hyphen.
+
 - [2026-05-24-workitems-pushback-and-readme-conventions.md](2026-05-24-workitems-pushback-and-readme-conventions.md) — Added WORKITEMS.md + branch-per-workitem + README-everywhere conventions (D15); hygiene items 5 (push-back) and 6 (ask-twice-global) added project + lifted to global.
   Six file ops in vyasa + one in harsh-brain/CLAUDE.md via the global symlink; five workitems queued. Ask-twice rule fired on its own first use and surfaced that `~/.claude/CLAUDE.md` is a symlink into harsh-brain.
 

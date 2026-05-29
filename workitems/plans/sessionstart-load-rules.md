@@ -1,5 +1,11 @@
 # Plan — SessionStart hook to auto-load default rules
 
+> **SUPERSEDED (2026-05-29).** The `SessionStart` hook this plan describes was built (2026-05-28) but
+> hit Claude Code's ~10K-char hook-stdout cap, so only ~1 of 6 shards reached context. Rule-loading
+> was migrated to a `CLAUDE.md` → `@rules/INDEX.md` → shard `@import` chain. See
+> [`migrate-hook-to-import.md`](migrate-hook-to-import.md) and README **D18 — Rule-loading moves from
+> SessionStart hook to CLAUDE.md @import**. This file is kept as design history; do not act on it.
+>
 > Workitem: "SessionStart hook to auto-load default rules into context" (see [`../open.md`](../open.md)).
 > Status: **planned, not yet built.** This plan satisfies the plan-before-build gate; the actual
 > build is a separate workitem/branch so we don't violate the gate on day one.

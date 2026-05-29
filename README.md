@@ -219,6 +219,17 @@ Companion behavioral additions (in `rules/hygiene.md`, items 5–6): a **push-ba
 
 **Why:** (1) The workitems domain grew from one concern (a checklist) to three (open queue, done archive, per-item plans) — that's the trigger in `D13 — Shardable-domain pattern: folder + INDEX.md routing` for promoting a domain to a folder. Splitting open from done also keeps the live list lean: completed items no longer bury pending work, and if `open.md` is auto-loaded, finished items don't burn context. (2) The plan-before-build gate forces design to precede code, so work starts from a written, agreed plan instead of improvised implementation — and the plan file becomes durable design history. Note on scope tension: `rules/readme-convention.md` says every directory carries a `README.md`, but sharded domains (`rules/`, `notes/`, now `workitems/`) use `INDEX.md` as the entry doc instead; reconciling that wording is a queued workitem, not resolved here.
 
+### D18. Rule-loading moves from SessionStart hook to CLAUDE.md @import
+**Decision:** The default-load rule shards now reach session context via a `CLAUDE.md` → `@rules/INDEX.md` → per-shard `@import` chain, not via the `SessionStart` hook `hooks/load-default-rules.sh`. The hook is deleted and `.claude/settings.json` is now an empty `{}`. `rules/INDEX.md` stays the single source of truth for *which* shards load — its six `@`-import lines are both the human router and the load mechanism, so there is no list duplication (Option A of the plan).
+
+**Why:** The hook concatenated all six shards (~20KB) to stdout, but Claude Code caps `SessionStart` hook-stdout injection at ~10,000 chars — the overflow spills to a file and only a ~2KB preview reaches context. Net effect: only ~1 of 6 shards actually loaded, so the hook was effectively broken for a payload this size. `@import` expands imported memory files in full at launch with no such cap (verified v2.1.156–157), so it is strictly better for this job.
+
+**Note on prior state:** the hook itself never had a D-entry — it shipped 2026-05-28 and was logged only in `plans/sessionstart-load-rules.md` and `workitems/done.md`. So D18 does not supersede a prior decision; it establishes, for the first time in the decisions log, the mechanism by which default rules load. `plans/sessionstart-load-rules.md` is annotated as superseded.
+
+**Verified behavior (not assumed):** with the hook removed, a headless `claude -p` probe (file/search tools disabled, so the agent could answer only from preloaded context) returned a unique buried token from all six shard *bodies* — hygiene, voice, island, workitems, readme-convention, git-workflow. One delta from the hook: `@import` strips each shard's leading YAML frontmatter (`WHAT:`/`LOAD:` lines), so that metadata no longer reaches context. Accepted (user, 2026-05-29): frontmatter is descriptive routing metadata, not rules, and the same routing information still loads via `rules/INDEX.md` itself. No rule text is lost.
+
+**Compaction (open caveat):** the old hook re-fired on `compact` to re-inject rules after a conversation was summarized. `@import` rides on persistent project memory, which is expected to reload into each fresh context window (including the post-compaction one) — but this migration did not force a live `/compact` to prove it, because a headless `claude -p` never compacts. If a future live session finds imported rules absent after `/compact`, the fallback is a minimal `compact`-only hook (plan option B3-b — hybrid).
+
 ---
 
 ## How to use vyasa (future state)

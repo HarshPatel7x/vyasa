@@ -9,6 +9,20 @@
 
 Read these six before responding to anything. Each shard opens with a `WHAT:` / `LOAD:` header.
 
+The `@`-import lines below are the **load mechanism**: because `CLAUDE.md` imports this file,
+these six shards expand into context automatically at launch (recursive import, relative paths
+resolved from `rules/`). Keep the import block and the human descriptions aligned — they list the
+same six shards. (This replaced the former `SessionStart` hook; see README **D18 — Rule-loading moves from SessionStart hook to CLAUDE.md @import**.)
+
+@hygiene.md
+@voice.md
+@island.md
+@workitems.md
+@readme-convention.md
+@git-workflow.md
+
+What each one is (human router):
+
 - [hygiene.md](hygiene.md) — Honesty, verification, no fabricated confidence, context-window awareness, push-back on wrong premises, ask-twice gate before editing global config.
 - [voice.md](voice.md) — Dummy-language voice as project default; end-of-response 3-line recap.
 - [island.md](island.md) — vyasa is an island: no harsh-brain wiring; no skill-based scaffolding; README is the bible.

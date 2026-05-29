@@ -6,6 +6,9 @@
 
 ---
 
+- [2026-05-28-sessionstart-load-rules-hook.md](2026-05-28-sessionstart-load-rules-hook.md) — Shipped `hooks/load-default-rules.sh`, a SessionStart hook that parses the Default-load list in `rules/INDEX.md` and injects the six shards into starting context — guaranteed load, no longer compliance-based.
+  Auditor agent approved with zero blockers; applied its should-fix (parser now tolerates a `#anchor` and uses a bare-filename allowlist so no shard is silently dropped). Bundled a stale-count fix in `rules/INDEX.md` ("three" → "six"). open.md candidate deliberately NOT auto-loaded.
+
 - [2026-05-28-claude-md-load-research-and-workitems-folder.md](2026-05-28-claude-md-load-research-and-workitems-folder.md) — Researched how Claude Code loads CLAUDE.md (auto-load is compliance-based, @import eager but no token saving, .claude/rules/ paths-scoping is the real lever); decided keep-modular + fix load via SessionStart hook; built the workitems/ folder + plan-before-build gate (D17 — Workitems become a folder; open/done split; plan-before-build gate).
   Default shards empirically did NOT auto-load this session — proving the read-chain gap. Audit agent caught 3 stale WORKITEMS.md refs in git-workflow.md; git soft-reset kept the old index (needed `git add -A` to re-stage). Shipped via PR #2.
 

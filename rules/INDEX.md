@@ -7,7 +7,7 @@
 
 ## Default-load (read at session start, every session)
 
-Read these three before responding to anything. Each shard opens with a `WHAT:` / `LOAD:` header.
+Read these six before responding to anything. Each shard opens with a `WHAT:` / `LOAD:` header.
 
 - [hygiene.md](hygiene.md) — Honesty, verification, no fabricated confidence, context-window awareness, push-back on wrong premises, ask-twice gate before editing global config.
 - [voice.md](voice.md) — Dummy-language voice as project default; end-of-response 3-line recap.

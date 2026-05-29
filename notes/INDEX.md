@@ -6,6 +6,9 @@
 
 ---
 
+- [2026-05-29-hook-to-import-migration.md](2026-05-29-hook-to-import-migration.md) — Found the SessionStart rules-hook is mostly defeated by Claude Code's 10K hook-stdout cap (only ~1 of 6 shards loaded); verified single-hop AND recursive `@import` work, so Option A is locked — `rules/INDEX.md` stays single source of truth and does the loading. Build deferred to a fresh session.
+  Architect-agent audit caught 3 issues (no existing hook D-entry → write D18; verify all six shards not first+last; post-compaction reload regression). Decided pure `@import` (B3-a) with a hybrid compact-only hook as fallback; compaction is only testable via a live `/compact`, not `claude -p`. Two unmerged branches; nothing live changed.
+
 - [2026-05-28-sessionstart-load-rules-hook.md](2026-05-28-sessionstart-load-rules-hook.md) — Shipped `hooks/load-default-rules.sh`, a SessionStart hook that parses the Default-load list in `rules/INDEX.md` and injects the six shards into starting context — guaranteed load, no longer compliance-based.
   Auditor agent approved with zero blockers; applied its should-fix (parser now tolerates a `#anchor` and uses a bare-filename allowlist so no shard is silently dropped). Bundled a stale-count fix in `rules/INDEX.md` ("three" → "six"). open.md candidate deliberately NOT auto-loaded.
 

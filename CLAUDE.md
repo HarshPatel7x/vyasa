@@ -5,6 +5,12 @@
 **Before doing anything else in this project, read [`rules/INDEX.md`](rules/INDEX.md) and follow it.**
 That file lists which shards to load by default and which to load on specific triggers.
 
+The default-load shards are pulled into context automatically by the import below
+(`CLAUDE.md` → `rules/INDEX.md` → the six shards). `rules/INDEX.md` stays the single
+source of truth for *which* shards load; this line is just the mechanism that loads them.
+
+@rules/INDEX.md
+
 ---
 
 ## Convention (the one rule that lives here, not in a shard)

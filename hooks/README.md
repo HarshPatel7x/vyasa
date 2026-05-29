@@ -18,7 +18,12 @@
 
 ### Claude Code hooks (wired via `.claude/settings.json`)
 
-- **`load-default-rules.sh`** — `SessionStart` hook. Parses the **Default-load** section of `rules/INDEX.md` (the single source of truth) and prints the concatenated shards to stdout, which Claude Code injects into the session's starting context. Guarantees the always-on rules load every session instead of depending on Claude following the `CLAUDE.md` → `rules/INDEX.md` → shard read-chain. Re-runs on `startup|resume|clear|compact`, so the rules refresh after compaction (a `(refreshed post-compaction)` marker is added when `source == "compact"`). The script resolves the repo root from its own path, so cwd does not matter. Missing-shard listings are surfaced on stderr but do not abort the load.
+None currently. Default-rule loading used to live here as a `SessionStart` hook
+(`load-default-rules.sh`), but that hook hit Claude Code's ~10K-char hook-stdout cap and
+only ~1 of the 6 shards reached context. It was replaced by a `CLAUDE.md` → `@rules/INDEX.md`
+→ shard `@import` chain, which expands the full shard bodies at launch with no cap. See
+README decision **D18 — Rule-loading moves from SessionStart hook to CLAUDE.md @import** and
+`rules/INDEX.md`. (`.claude/settings.json` is now an empty `{}`.)
 
 ## One-time setup (per clone)
 
@@ -34,7 +39,7 @@ Verify with:
 git config --get core.hooksPath   # should print: hooks
 ```
 
-The `load-default-rules.sh` hook needs no per-clone setup — it activates from the checked-in `.claude/settings.json`. Confirm it runs by starting a fresh session and checking the default shards are present in context.
+Default-rule loading needs no per-clone setup — it rides on the `@import` chain in `CLAUDE.md`/`rules/INDEX.md`, which Claude Code expands automatically. Confirm it works by starting a fresh session and checking the default shards are present in context.
 
 ## Bypassing
 

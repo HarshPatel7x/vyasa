@@ -5,7 +5,8 @@
 > reinforcements: (1) a one-word `plain` interrupt the user can fire anytime; (2) a before-sending
 > self-check step; (3) a small reusable glossary. No automated enforcement."
 
-Status: **planned, awaiting build sign-off.** Plan-before-build gate per `rules/workitems.md`.
+Status: **planned (rev 2, one architect audit folded in), awaiting build sign-off.** Plan-before-build
+gate per `rules/workitems.md`.
 
 ---
 
@@ -19,10 +20,17 @@ at a fixed spot. The free-flowing prose is where discipline slipped.
 
 ## Decision (user, 2026-05-31): do all three
 
-Lean on *triggers and friction-reduction*, not more exhortation, and explicitly NOT on automated
-enforcement (judging "is this prose too jargony" is a semantic call, not regex-checkable — and this
-project already learned hooks are costly/finicky, see `D18 — Rule-loading moves from SessionStart hook
-to CLAUDE.md @import`).
+Lean on *triggers and friction-reduction*, not more exhortation, and NOT on automated enforcement
+**for v1**. Honest framing of the automation question (sharpened by the rev-1 review):
+- A **general** "is this prose plain enough" script is genuinely infeasible — a semantic,
+  audience-relative judgment, not regex-checkable.
+- A **narrow** script (flag listed glossary terms used without their gloss nearby) is feasible *in
+  principle* but (a) high-false-positive, because `rules/voice.md` itself exempts code, file paths,
+  and commands — exactly where these terms legitimately appear unglossed — and (b) gated on an
+  **unverified** fact: whether a hook in this harness can even see the assistant's outgoing message.
+- So the narrow script is **deferred to its own evaluation workitem (cheapest probe first)**, not
+  bundled here. Hooks are also costly/finicky here (see `D18 — Rule-loading moves from SessionStart
+  hook to CLAUDE.md @import`).
 
 ## Proposed `rules/voice.md` additions (exact wording — approve before edit)
 
@@ -32,7 +40,8 @@ to CLAUDE.md @import`).
 
 The user can type **`plain`** (or "plain please") at any moment. On seeing it, immediately stop,
 drop all jargon, and re-explain the most recent thing in plain words — no file paths, no tool names,
-no rule codes. It is the conversational equivalent of the recap, available on demand. Distinct from
+no rule codes. If the most recent thing was already plain, say so briefly and move on — no forced
+re-explanation. It is the conversational equivalent of the recap, available on demand. Distinct from
 "quiet mode" (which *suppresses* the recap); `plain` *triggers* a plain re-explanation.
 ```
 
@@ -42,9 +51,9 @@ no rule codes. It is the conversational equivalent of the recap, available on de
 
 Before sending any non-trivial or technical response, do one pass over your own draft and ask:
 "would a smart non-specialist stall on any word here?" Gloss each such term on first use, or cut it.
-This is a fixed checkpoint — like the end-of-response recap — not an aspiration. The recap held all
-through the 2026-05-31 session precisely because it was a fixed checkpoint; this gives the body prose
-the same kind of anchor.
+This is a fixed checkpoint — like the end-of-response recap — not an aspiration. The recap is a fixed
+checkpoint and held all through the 2026-05-31 session; this gives the body prose the same kind of
+anchor.
 ```
 
 ### Addition C — Recurring-terms glossary (new subsection at the end of the file)
@@ -67,19 +76,34 @@ friction. Use the gloss the first time a term appears in a session, then the bar
 | shard           | one small rule file (the rules are split into several) |
 | @import         | a line that pulls another file's contents in automatically |
 
-This table may graduate to its own file if it grows; for now it lives here.
+**Graduation trigger (kept unambiguous — this project forbids fuzzy triggers):** when this table
+exceeds ~20 rows, OR stops being "recurring terms" and turns into a general dictionary, move it OUT
+of this always-loaded rule into an on-demand `rules/glossary.md` that this rule points at. Reference
+data should not ride in a default-load shard, which pays its context cost every session. Until that
+threshold, it lives here.
 ```
 
 ## Implementation steps
 
-1. Branch `workitem/voice-rule-reinforcement` (already cut).
-2. Apply Additions A, B, C to `rules/voice.md` verbatim (above), placed as noted.
-3. No D-entry needed: this refines an existing rule, it is not a structural decision (no new domain,
-   no change to how rules load). Confirm at build that the `readme-decisions-log.md` trigger does NOT
-   fire; if judgment says it does, add the entry + `Touches:` footer.
+1. Confirm branch `workitem/voice-rule-reinforcement` exists (`git branch`) — don't trust this doc.
+2. Apply Additions A, B, C to `rules/voice.md` verbatim (above), placed as noted. **Reconcile the
+   duplicate `hook` gloss:** `voice.md`'s existing "Dummy-language as default" example (~line 14)
+   already glosses `hook`; point that example at the new glossary table so there is ONE canonical
+   wording, not two that can drift.
+3. No D-entry needed now: this refines an existing rule, not a structural decision (no new domain, no
+   change to how rules load). Confirm at build that the `readme-decisions-log.md` trigger does NOT
+   fire. **Two FUTURE conditions that *would* warrant a D-entry (flagged so they aren't forgotten):**
+   (i) if the narrow glossary-term script is ever built as standing policy; (ii) if the glossary
+   graduates to its own `rules/glossary.md` (that's a `D13 — Shardable-domain pattern: folder +
+   INDEX.md routing` move).
 4. Commit on the branch (`docs(rules): ...`), per `rules/git-workflow.md`. No bare D-codes in the
-   message.
+   message (any `D18`/`D13` mention needs its ` — <title>` em-dash expansion or `commit-msg` fails).
 5. Move the workitem `open.md` → `done.md`; open PR.
+6. **Separately** (its own future workitem, NOT this branch): file the narrow-script *evaluation* —
+   to test, not build. Cheapest-first probe order: (a) does a Stop-style hook even receive the
+   assistant's response text? If no → close it, human-only is permanent. (b) Can code/paths/commands
+   be stripped cleanly enough to kill false alarms? (c) per-message vs session-stateful first-use
+   tracking. (d) a warn-only friction trial — ship only if real catches clearly beat false alarms.
 
 ## Verification
 
@@ -93,5 +117,6 @@ This table may graduate to its own file if it grows; for now it lives here.
 
 ## Out of scope
 
-- Automated/hook enforcement of prose plainness (rejected above).
+- Building automated/hook enforcement now. The *general* version is rejected as infeasible; the
+  *narrow* version (glossary-term scan) is deferred to a separate evaluation workitem — see step 6.
 - Lifting `rules/voice.md` to global scope (it is project-only; revisit separately if ever wanted).

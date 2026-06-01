@@ -28,9 +28,10 @@ Lean on *triggers and friction-reduction*, not more exhortation, and NOT on auto
   principle* but (a) high-false-positive, because `rules/voice.md` itself exempts code, file paths,
   and commands — exactly where these terms legitimately appear unglossed — and (b) gated on an
   **unverified** fact: whether a hook in this harness can even see the assistant's outgoing message.
-- So the narrow script is **deferred to its own evaluation workitem (cheapest probe first)**, not
-  bundled here. Hooks are also costly/finicky here (see `D18 — Rule-loading moves from SessionStart
-  hook to CLAUDE.md @import`).
+- The narrow script was **considered and dropped** (user decision, 2026-05-31): the false-alarm
+  floor (terms legitimately appear unglossed in code/paths/commands) plus the unverified
+  hook-visibility made it not worth pursuing. Plain English stays human-run. Hooks are also
+  costly/finicky here (see `D18 — Rule-loading moves from SessionStart hook to CLAUDE.md @import`).
 
 ## Proposed `rules/voice.md` additions (exact wording — approve before edit)
 
@@ -92,18 +93,17 @@ threshold, it lives here.
    wording, not two that can drift.
 3. No D-entry needed now: this refines an existing rule, not a structural decision (no new domain, no
    change to how rules load). Confirm at build that the `readme-decisions-log.md` trigger does NOT
-   fire. **Two FUTURE conditions that *would* warrant a D-entry (flagged so they aren't forgotten):**
-   (i) if the narrow glossary-term script is ever built as standing policy; (ii) if the glossary
-   graduates to its own `rules/glossary.md` (that's a `D13 — Shardable-domain pattern: folder +
-   INDEX.md routing` move).
+   fire. **One FUTURE condition that *would* warrant a D-entry (flagged so it isn't forgotten):** if
+   the glossary graduates to its own `rules/glossary.md` (that's a `D13 — Shardable-domain pattern:
+   folder + INDEX.md routing` move). (The script-enforcement path was dropped, so it is no longer a
+   pending condition.)
 4. Commit on the branch (`docs(rules): ...`), per `rules/git-workflow.md`. No bare D-codes in the
    message (any `D18`/`D13` mention needs its ` — <title>` em-dash expansion or `commit-msg` fails).
 5. Move the workitem `open.md` → `done.md`; open PR.
-6. **Separately** (its own future workitem, NOT this branch): file the narrow-script *evaluation* —
-   to test, not build. Cheapest-first probe order: (a) does a Stop-style hook even receive the
-   assistant's response text? If no → close it, human-only is permanent. (b) Can code/paths/commands
-   be stripped cleanly enough to kill false alarms? (c) per-message vs session-stateful first-use
-   tracking. (d) a warn-only friction trial — ship only if real catches clearly beat false alarms.
+6. **Script idea: dropped** (user decision, 2026-05-31) — NOT filed as a workitem. The general
+   plainness-check is infeasible; the narrow glossary-term script's false-alarm floor plus the
+   unverified hook-visibility made it not worth pursuing. Recorded here for the audit trail; plain
+   English stays human-run, with the `plain` interrupt + the before-sending self-check as the levers.
 
 ## Verification
 
@@ -117,6 +117,7 @@ threshold, it lives here.
 
 ## Out of scope
 
-- Building automated/hook enforcement now. The *general* version is rejected as infeasible; the
-  *narrow* version (glossary-term scan) is deferred to a separate evaluation workitem — see step 6.
+- Automated/hook enforcement of prose plainness. The *general* version is infeasible; the *narrow*
+  version (glossary-term scan) was considered and dropped (see step 6) — plain English stays
+  human-run.
 - Lifting `rules/voice.md` to global scope (it is project-only; revisit separately if ever wanted).

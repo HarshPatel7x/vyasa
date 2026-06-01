@@ -6,6 +6,9 @@
 
 ---
 
+- [2026-05-31-edit-checker-plan-and-voice-rule.md](2026-05-31-edit-checker-plan-and-voice-rule.md) — Planned the edit-checker (diff-verification) hook through three architect audits — the first caught a blocking flaw (git-diff shows cumulative, not per-edit, delta), reworked to a before/after snapshot pair; saved unmerged for a fresh-session build. Then reinforced the plain-English rule after the assistant drifted into heavy jargon live (rule was loaded the whole time): added a `plain` interrupt, a before-sending self-check, and a capped glossary; merged via PR #7.
+  Lesson: a loaded rule is not an obeyed rule — fixed-position rituals (the recap) held while free-prose intentions drifted, so the fix adds active handles, not louder text. Script enforcement considered and dropped (general case infeasible, narrow case high-false-positive + unverified hook visibility).
+
 - [2026-05-31-compaction-test-verdict.md](2026-05-31-compaction-test-verdict.md) — Ran the one test the migration couldn't run headlessly: a live `/compact` in a fresh session. All three buried rule tokens survived, closing the last open caveat on D18 — Rule-loading moves from SessionStart hook to CLAUDE.md @import.
   Mechanism observed: `/compact` auto-re-reads the `@import`'d shards while rebuilding context, so rules reload by re-import (the 2026-05-29 "strong hunch" confirmed). B3-b fallback hook not needed/not built. Honest limit: a zero-read probe couldn't be isolated (compact reads the files itself) — moot, since the rules are present either way.
 

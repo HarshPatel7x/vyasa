@@ -6,6 +6,9 @@
 
 ---
 
+- [2026-05-31-compaction-test-verdict.md](2026-05-31-compaction-test-verdict.md) — Ran the one test the migration couldn't run headlessly: a live `/compact` in a fresh session. All three buried rule tokens survived, closing the last open caveat on D18 — Rule-loading moves from SessionStart hook to CLAUDE.md @import.
+  Mechanism observed: `/compact` auto-re-reads the `@import`'d shards while rebuilding context, so rules reload by re-import (the 2026-05-29 "strong hunch" confirmed). B3-b fallback hook not needed/not built. Honest limit: a zero-read probe couldn't be isolated (compact reads the files itself) — moot, since the rules are present either way.
+
 - [2026-05-29-hook-to-import-migration.md](2026-05-29-hook-to-import-migration.md) — Found the SessionStart rules-hook is mostly defeated by Claude Code's 10K hook-stdout cap (only ~1 of 6 shards loaded); verified single-hop AND recursive `@import` work, so Option A is locked — `rules/INDEX.md` stays single source of truth and does the loading. Build deferred to a fresh session.
   Architect-agent audit caught 3 issues (no existing hook D-entry → write D18; verify all six shards not first+last; post-compaction reload regression). Decided pure `@import` (B3-a) with a hybrid compact-only hook as fallback; compaction is only testable via a live `/compact`, not `claude -p`. Two unmerged branches; nothing live changed.
 

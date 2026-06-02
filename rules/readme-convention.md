@@ -11,7 +11,8 @@ Every directory carries a `README.md` — one filename, everywhere. It is the fi
 and file browsers auto-render, so it is always the first thing a reader or tool looks for.
 (`INDEX.md` is retired in favor of it.)
 
-A README takes one of two shapes, by what its directory holds:
+A README takes one of two shapes (plus a tie-breaker for the in-between case), by what its
+directory holds:
 
 - **Routing directory** — holds other docs/shards (e.g. `rules/`, `docs/`). Its README is **thin**:
   one or two sentences of *what this directory is*, then a **router** — a list of, and links to, the

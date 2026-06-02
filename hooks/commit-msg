@@ -112,7 +112,7 @@ fi
 # --- Touches: D<N> footer correctness ---
 touches_lines="$(printf '%s' "$clean_msg" | grep -E '^Touches: D[0-9]+ — ' || true)"
 if [[ -n "$touches_lines" ]]; then
-  # README.md must be among the files this commit changes
+  # docs/decisions.md must be among the files this commit changes
   if ! readme_changed | grep -qx "$DECISIONS_FILE"; then
     fail "'Touches: D<N> — …' footer present but docs/decisions.md is not in this commit's staged changes"
   fi

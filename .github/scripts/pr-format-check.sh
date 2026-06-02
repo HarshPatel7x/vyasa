@@ -111,8 +111,8 @@ case "$mode" in
       [[ -z "$sha" ]] && continue
       msg_file="${tmpdir}/${sha}.msg"
       git log -1 --format=%B "$sha" > "$msg_file"
-      # Run the real hook in CI mode so its Touches check resolves README from
-      # this commit's tree (COMMIT_REF="<sha>:").
+      # Run the real hook in CI mode so its Touches check resolves docs/decisions.md
+      # from this commit's tree (COMMIT_REF="<sha>:").
       if COMMIT_REF="${sha}:" bash "$commit_msg_hook" "$msg_file"; then
         echo "✓ commit ${sha} OK"
       else

@@ -1,19 +1,19 @@
 ---
-WHAT: Updating the README decisions log.
+WHAT: Updating the decisions log in `docs/decisions.md`.
 TRIGGER: A structural decision is made or changed during a session.
 LOAD: When the trigger above is met.
 ---
 
-# README decisions log
+# Decisions log
 
-`README.md` is the project bible. Every structural decision lives in its **Decisions log** section.
+The project bible is the `README.md` + `docs/` tree. Every structural decision lives in the **Decisions log** at `docs/decisions.md`.
 
 ## When the trigger fires
 
 A *structural* decision = anything about how vyasa is shaped:
 
 - Adding/removing/renaming top-level directories
-- Changing how shards are organized (`rules/`, `notes/`, future `docs/`)
+- Changing how shards are organized (`rules/`, `notes/`, `docs/`)
 - Changing what is or isn't tracked in git
 - Changing what the project IS (purpose, scope, name)
 - Changing how rules or notes are managed
@@ -23,7 +23,7 @@ Behavioral rules (voice, recap, hygiene specifics) live in `rules/` shards, **no
 
 ## Format
 
-Append to the bottom of the Decisions log section in `README.md`. Use the next sequential D-number.
+Append to the bottom of the Decisions log in `docs/decisions.md`. Use the next sequential D-number.
 
 ```
 ### D<N>. <Short title>
@@ -35,4 +35,4 @@ If the decision has a follow-up recipe (e.g., "ready to apply to X later"), incl
 
 ## Same-session rule
 
-The README update happens in **the same session** as the decision. Never defer to "next time" — that's how the bible falls behind.
+The `docs/decisions.md` update happens in **the same session** as the decision. Never defer to "next time" — that's how the bible falls behind.

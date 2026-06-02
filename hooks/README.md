@@ -12,9 +12,9 @@
   - Subject longer than 72 chars or ending with a period
   - Body line longer than 100 chars (URL-only lines exempt)
   - Any `D<N>` mention not followed inline by ` — <title>` (em-dash U+2014)
-  - `Touches: D<N> — <title>` footer when README.md is not staged, or when the footer's title does not match the staged README's `### D<N>. <title>` heading
+  - `Touches: D<N> — <title>` footer when docs/decisions.md is not staged, or when the footer's title does not match the staged docs/decisions.md `### D<N>. <title>` heading
 
-  **`COMMIT_REF` seam (so CI can reuse this hook):** the only part of `commit-msg` that needs the staging *index* is the `Touches:` block — `git diff --cached` (which files changed) and `git show :README.md` (the README blob). An already-made commit in a fresh CI checkout has no index, so those reads are routed through a `COMMIT_REF` indirection: unset → `:` (the index, the local default — behavior is byte-for-byte unchanged); set to `<sha>:` → the helpers `readme_changed`/`readme_blob` resolve the changed files and the README blob from that commit's tree instead. The PR-format CI (`.github/scripts/pr-format-check.sh commits`) invokes this same hook with `COMMIT_REF="<sha>:"` for each non-merge commit in a PR, so the local hook and the server-side check share one source of truth and cannot drift. See README decision **D20 — PR title + body format enforced via GitHub Actions CI** and the design in `workitems/plans/pr-format-check.md`.
+  **`COMMIT_REF` seam (so CI can reuse this hook):** the only part of `commit-msg` that needs the staging *index* is the `Touches:` block — `git diff --cached` (which files changed) and `git show :docs/decisions.md` (the decisions-log blob). An already-made commit in a fresh CI checkout has no index, so those reads are routed through a `COMMIT_REF` indirection: unset → `:` (the index, the local default — behavior is byte-for-byte unchanged); set to `<sha>:` → the helpers `readme_changed`/`decisions_blob` resolve the changed files and the docs/decisions.md blob from that commit's tree instead. The PR-format CI (`.github/scripts/pr-format-check.sh commits`) invokes this same hook with `COMMIT_REF="<sha>:"` for each non-merge commit in a PR, so the local hook and the server-side check share one source of truth and cannot drift. See decision **D20 — PR title + body format enforced via GitHub Actions CI** (in `docs/decisions.md`) and the design in `workitems/plans/pr-format-check.md`.
 
 - **`pre-commit`** — blocks direct commits on `main` (per branch-per-workitem). Allows merge commits in progress (e.g., from `git pull`).
 
@@ -24,9 +24,9 @@
 (PostToolUse), matcher `Edit|Write|MultiEdit`. Together they surface the **exact delta a single
 edit made**, computed from the file's real before/after bytes — independent of anything the model
 claims. When a reported-successful edit leaves the file byte-identical, `verify-diff.sh` also
-injects a factual, neutral note into the model's context. See README decision
-**D19 — Project-scope Claude Code Pre/PostToolUse hooks for edit verification** and the full design
-in `workitems/plans/diff-verification-hook.md`.
+injects a factual, neutral note into the model's context. See decision
+**D19 — Project-scope Claude Code Pre/PostToolUse hooks for edit verification** (in `docs/decisions.md`)
+and the full design in `workitems/plans/diff-verification-hook.md`.
 
 How the pair works:
 
@@ -61,9 +61,9 @@ uniformly.
 
 Prior Claude Code hook history: default-rule loading once lived here as a `SessionStart` hook
 (`load-default-rules.sh`), but it hit Claude Code's ~10K-char hook-stdout cap and only ~1 of the 6
-shards reached context. It was replaced by a `CLAUDE.md` → `@rules/INDEX.md` → shard `@import` chain,
-which expands the full shard bodies at launch with no cap. See README decision
-**D18 — Rule-loading moves from SessionStart hook to CLAUDE.md @import** and `rules/INDEX.md`.
+shards reached context. It was replaced by a `CLAUDE.md` → `@rules/README.md` → shard `@import` chain,
+which expands the full shard bodies at launch with no cap. See decision
+**D18 — Rule-loading moves from SessionStart hook to CLAUDE.md @import** (in `docs/decisions.md`) and `rules/README.md`.
 
 ## One-time setup (per clone)
 
@@ -79,7 +79,7 @@ Verify with:
 git config --get core.hooksPath   # should print: hooks
 ```
 
-Default-rule loading needs no per-clone setup — it rides on the `@import` chain in `CLAUDE.md`/`rules/INDEX.md`, which Claude Code expands automatically. Confirm it works by starting a fresh session and checking the default shards are present in context.
+Default-rule loading needs no per-clone setup — it rides on the `@import` chain in `CLAUDE.md`/`rules/README.md`, which Claude Code expands automatically. Confirm it works by starting a fresh session and checking the default shards are present in context.
 
 ## Bypassing
 

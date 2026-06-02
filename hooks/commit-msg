@@ -8,11 +8,14 @@ msg_file="$1"
 
 # --- COMMIT_REF seam: lets CI reuse this hook against an already-made commit ---
 # Locally (default), COMMIT_REF is ":" — the staging index, so the Touches checks
-# below read the staged README exactly as before (behavior byte-for-byte unchanged).
+# below read the staged docs/decisions.md exactly as before (behavior byte-for-byte unchanged).
 # In CI, the PR-format workflow sets COMMIT_REF="<sha>:" so the same checks resolve
-# the changed files and the README blob from that commit's tree instead of an index
+# the changed files and the docs/decisions.md blob from that commit's tree instead of an index
 # (which does not exist for an already-made commit in a fresh checkout).
 COMMIT_REF="${COMMIT_REF:-:}"
+
+# Path to the decisions log — the file the Touches: footer validates against (was README.md).
+DECISIONS_FILE="docs/decisions.md"
 
 # Files changed by the commit/index referenced by COMMIT_REF.
 readme_changed() {
@@ -23,9 +26,10 @@ readme_changed() {
   fi
 }
 
-# README.md blob as of COMMIT_REF (":README.md" for the index, "<sha>:README.md" for a commit).
-readme_blob() {
-  git show "${COMMIT_REF}README.md" 2>/dev/null
+# docs/decisions.md blob as of COMMIT_REF (":docs/decisions.md" for the index,
+# "<sha>:docs/decisions.md" for a commit).
+decisions_blob() {
+  git show "${COMMIT_REF}${DECISIONS_FILE}" 2>/dev/null
 }
 
 # Strip git's comment lines and trailing blank lines
@@ -108,23 +112,23 @@ fi
 # --- Touches: D<N> footer correctness ---
 touches_lines="$(printf '%s' "$clean_msg" | grep -E '^Touches: D[0-9]+ — ' || true)"
 if [[ -n "$touches_lines" ]]; then
-  # README.md must be among the files this commit changes
-  if ! readme_changed | grep -qx 'README.md'; then
-    fail "'Touches: D<N> — …' footer present but README.md is not in this commit's staged changes"
+  # docs/decisions.md must be among the files this commit changes
+  if ! readme_changed | grep -qx "$DECISIONS_FILE"; then
+    fail "'Touches: D<N> — …' footer present but docs/decisions.md is not in this commit's staged changes"
   fi
 
   while IFS= read -r line; do
     if [[ "$line" =~ ^Touches:\ D([0-9]+)\ —\ (.+)$ ]]; then
       d_num="${BASH_REMATCH[1]}"
       footer_title="${BASH_REMATCH[2]}"
-      readme_title="$(readme_blob | grep -E "^### D${d_num}\. " | head -n 1 | sed -E "s/^### D${d_num}\. //")"
+      readme_title="$(decisions_blob | grep -E "^### D${d_num}\. " | head -n 1 | sed -E "s/^### D${d_num}\. //")"
       if [[ -z "$readme_title" ]]; then
-        fail "footer references D${d_num} but no '### D${d_num}. …' heading exists in staged README.md"
+        fail "footer references D${d_num} but no '### D${d_num}. …' heading exists in staged docs/decisions.md"
       fi
       if [[ "$readme_title" != "$footer_title" ]]; then
-        fail "footer title for D${d_num} does not match README:
+        fail "footer title for D${d_num} does not match docs/decisions.md:
   Footer: ${footer_title}
-  README: ${readme_title}"
+  docs/decisions.md: ${readme_title}"
       fi
     fi
   done <<< "$touches_lines"

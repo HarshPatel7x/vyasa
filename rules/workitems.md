@@ -7,12 +7,12 @@ LOAD: Default — every session.
 
 ## The checklist lives in the `workitems/` folder
 
-The workitems domain is a folder (folder-per-domain + `INDEX.md`, same pattern as `rules/` and `notes/`):
+The workitems domain is a folder (folder-per-domain + `README.md` router, same pattern as `rules/` and `notes/`):
 
 - [`workitems/open.md`](../workitems/open.md) — live queue of pending work. One entry per item. This is the lean list to read at session start. **Candidate for default-load.**
 - [`workitems/done.md`](../workitems/done.md) — archive of completed items. **Never auto-loaded** — on-demand only.
-- [`workitems/plans/`](../workitems/plans/INDEX.md) — one plan per workitem, loaded on demand.
-- [`workitems/INDEX.md`](../workitems/INDEX.md) — the router.
+- [`workitems/plans/`](../workitems/plans/README.md) — one plan per workitem, loaded on demand.
+- [`workitems/README.md`](../workitems/README.md) — the router.
 
 Checkbox format (`- [ ]` open, `- [x]` done). Read `open.md` at session start to know what's pending; append to it when the user agrees to new work; move items to `done.md` as they're completed.
 
@@ -20,7 +20,7 @@ When the user agrees to a new piece of work (a fix, a feature, a refactor, a rul
 
 ## Plan-before-build
 
-**No workitem gets implemented without a plan attached.** Before cutting a workitem's branch or writing any code, confirm a plan file exists for it under [`workitems/plans/<slug>.md`](../workitems/plans/INDEX.md). If it doesn't, write the plan and get the user's agreement *first*.
+**No workitem gets implemented without a plan attached.** Before cutting a workitem's branch or writing any code, confirm a plan file exists for it under [`workitems/plans/<slug>.md`](../workitems/plans/README.md). If it doesn't, write the plan and get the user's agreement *first*.
 
 - Open items with no plan yet are marked `(no plan)` in `open.md`, so the gap is visible at a glance.
 - An item with a plan links to it: `→ plan: [\`plans/<slug>.md\`](plans/<slug>.md)`.

@@ -13,7 +13,7 @@
 #             order-agnostic, content not inspected).
 #   commits — validate each non-merge commit message in $BASE_SHA..$HEAD_SHA with the
 #             real hooks/commit-msg, invoked in CI mode (COMMIT_REF="<sha>:") so its
-#             Touches: D<N> footer check resolves README from each commit's own tree.
+#             Touches: D<N> footer check resolves docs/decisions.md from each commit's tree.
 #
 # Hand-rolled (no third-party action) so the title/commit checks stay byte-identical to
 # the shell rules already enforced locally by hooks/commit-msg — one source of truth.
@@ -111,8 +111,8 @@ case "$mode" in
       [[ -z "$sha" ]] && continue
       msg_file="${tmpdir}/${sha}.msg"
       git log -1 --format=%B "$sha" > "$msg_file"
-      # Run the real hook in CI mode so its Touches check resolves README from
-      # this commit's tree (COMMIT_REF="<sha>:").
+      # Run the real hook in CI mode so its Touches check resolves docs/decisions.md
+      # from this commit's tree (COMMIT_REF="<sha>:").
       if COMMIT_REF="${sha}:" bash "$commit_msg_hook" "$msg_file"; then
         echo "✓ commit ${sha} OK"
       else

@@ -1,7 +1,7 @@
-# workitems — index
+# workitems
 
-> Router for the workitems domain. Same folder-per-domain + `INDEX.md` pattern as
-> [`rules/INDEX.md`](../rules/INDEX.md) and [`notes/INDEX.md`](../notes/INDEX.md).
+> Router for the workitems domain. Same folder-per-domain + `README.md` router pattern as
+> [`rules/README.md`](../rules/README.md) and [`notes/README.md`](../notes/README.md).
 
 ---
 
@@ -9,7 +9,7 @@
 
 - [open.md](open.md) — live queue of pending work. The lean, scannable list. **Candidate for default-load** so pending work is visible every session. Each item links to its plan, or is marked `(no plan)`.
 - [done.md](done.md) — archive of completed items. **Never loaded** into session context — on-demand only. Items move here from `open.md` on completion; never deleted (audit trail).
-- [plans/INDEX.md](plans/INDEX.md) — one plan per workitem. **Loaded on demand** when you pick up an item, never auto-loaded.
+- [plans/README.md](plans/README.md) — one plan per workitem. **Loaded on demand** when you pick up an item, never auto-loaded.
 
 ---
 

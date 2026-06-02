@@ -5,7 +5,14 @@
 > surfaces the actual delta. Goal: stop silent 'I edited X' claims from going unnoticed. Wire via
 > `~/.claude/settings.json` at project scope (not global, until proven here)."
 
-Status: **planned (rev 4, final — three audits folded in), awaiting build sign-off.** Plan-before-build
+Status: **BUILT 2026-06-01** (branch `workitem/diff-verification-hook`). Built from rev 4 below; Step 2's
+field-schema unknowns were resolved against current Claude Code docs (`tool_use_id` confirmed present →
+deterministic Pre/Post pairing), and the logic was verified by 22 hand-made-JSON cases. The live in-session
+trigger (Step 9) is deferred to the next fresh session because Claude Code does not hot-reload
+`settings.json` hooks (confirmed empirically this session). See `workitems/done.md` and `D19 — Project-scope
+Claude Code Pre/PostToolUse hooks for edit verification`.
+
+Original status: **planned (rev 4, final — three audits folded in), awaiting build sign-off.** Plan-before-build
 gate per `rules/workitems.md`.
 
 > **Revision history.**

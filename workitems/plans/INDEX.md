@@ -13,4 +13,4 @@
 - [verify-claudemd-import.md](verify-claudemd-import.md) — plan for verifying CLAUDE.md `@import` expands at launch (reopens Option 1 of the hook plan after the 10K hook-output cap was discovered). Status: verification workitem.
 - [voice-rule-reinforcement.md](voice-rule-reinforcement.md) — plan for reinforcing the plain-English rule with a `plain` interrupt, a before-sending self-check, and a recurring-terms glossary. Status: planned, awaiting build sign-off.
 - [migrate-hook-to-import.md](migrate-hook-to-import.md) — plan for the hook→`@import` migration. Status: built + shipped (PR #5); compaction caveat closed (PR #6).
-- [diff-verification-hook.md](diff-verification-hook.md) — plan for the PostToolUse diff-verification hook that surfaces the real on-disk delta after each Edit/Write. Status: planned, awaiting build sign-off.
+- [diff-verification-hook.md](diff-verification-hook.md) — plan for the PostToolUse diff-verification hook that surfaces the real on-disk delta after each Edit/Write. Status: built + shipped (2026-06-01); live trigger verified next fresh session.

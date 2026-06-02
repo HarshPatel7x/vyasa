@@ -1,5 +1,5 @@
 ---
-WHAT: Every directory or project under this tree carries a README.md.
+WHAT: Every directory carries a README.md; its shape follows the directory's role.
 LOAD: Default — every session.
 ---
 
@@ -7,28 +7,37 @@ LOAD: Default — every session.
 
 ## The rule
 
-Every directory or project — whether it contains code or not — carries a `README.md` at its root. The file is the discoverability hub: it explains what lives in that directory, why, and how to use it. New directory created in this project? Create its README in the same session.
+Every directory carries a `README.md` — one filename, everywhere. It is the file GitHub, IDEs,
+and file browsers auto-render, so it is always the first thing a reader or tool looks for.
+(`INDEX.md` is retired in favor of it.)
 
-## Why
+A README takes one of two shapes, by what its directory holds:
 
-README files have affordances that plain folders don't:
+- **Routing directory** — holds other docs/shards (e.g. `rules/`, `docs/`). Its README is **thin**:
+  one or two sentences of *what this directory is*, then a **router** — a list of, and links to, the
+  contents. Substantial prose lives in the files it points to, never here. A signpost, never a
+  destination.
+- **Leaf directory** — holds artifacts, not sub-docs (e.g. `hooks/`, `.github/`). Its README **is**
+  the documentation for those artifacts and carries narrative inline — there is nothing to route to.
+- **Mixed directory (tie-breaker)** — holds both artifacts and sub-docs → it is **routing**: the
+  README stays thin and routes to both. Per-artifact narrative lives in that artifact's nearest
+  README, not the parent's. Rule of thumb: if a directory has any child that is itself documented,
+  the parent routes.
 
-- They render automatically in GitHub, IDEs, and most file browsers.
-- They are the conventional entry point — readers look for them first.
-- They keep per-directory context co-located with the directory itself instead of being scattered across project-level docs.
+## Anti-sprawl test (the "no dumpster" guard)
 
-Skipping the README pushes that context elsewhere, where it gets lost or forgotten.
+Before creating a new doc file, ask: *"would a reader ever open this file on its own?"* If no, it
+belongs inside a sibling — cluster docs by topic, not by heading. A subdirectory whose contents are
+trivial may be covered by its parent's README. An empty placeholder dir (only `.gitkeep`) needs no
+README until it holds real content.
 
-## Minimum content
+## The root README
 
-A README does not need to be long. The minimum:
+The root `README.md` is a routing README: project identity (tagline + 2-sentence what-it-is) + a
+router into the `docs/` tree that holds the substantial content. Anything append-only (the decisions
+log) gets its own file under `docs/` so its growth never re-bloats the entry point.
 
-1. **What this directory is** — one or two sentences.
-2. **What lives here** — a brief inventory if non-obvious from filenames.
-3. **How to use / contribute / extend** — only if the directory has a usage pattern.
+## Scope
 
-If a directory is truly trivial (e.g., a single-file utility folder), a one-line README is fine — but the file must exist.
-
-## Scope of this rule
-
-This rule applies to **vyasa only** for now. It may be lifted to global in a future pass once the convention has been exercised here.
+vyasa-only for now; written to generalize — "README everywhere, content shape follows the directory's
+role" carries to any project unchanged. May lift to global once exercised here.

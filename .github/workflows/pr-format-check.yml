@@ -32,23 +32,29 @@ jobs:
       LANG: C.UTF-8
     steps:
       - name: Checkout (full history for commit-range validation)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           # Need the full history so BASE..HEAD commit ranges resolve.
           fetch-depth: 0
 
       - name: Validate PR title
+        # !cancelled() (not always()) so each of the three validation steps runs and
+        # reports independently even when an earlier one fails — but still respects the
+        # concurrency cancel-in-progress above, which always() would defeat.
+        if: ${{ !cancelled() }}
         # Title passed via env (not inline ${{ }}) to avoid shell injection.
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
         run: bash .github/scripts/pr-format-check.sh title
 
       - name: Validate PR body
+        if: ${{ !cancelled() }}
         env:
           PR_BODY: ${{ github.event.pull_request.body }}
         run: bash .github/scripts/pr-format-check.sh body
 
       - name: Validate commit messages
+        if: ${{ !cancelled() }}
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}

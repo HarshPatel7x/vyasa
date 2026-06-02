@@ -94,7 +94,7 @@ Same shape as a commit subject: `<type>(<scope>): <summary>`. Single-commit PR �
 | `Co-Authored-By` trailer when AI assisted                         | honor system                                             |
 | Imperative subject mood                                           | honor system                                             |
 | WHY-not-WHAT in body                                              | honor system                                             |
-| PR title + body format                                            | honor system today; CI enforcement is a queued workitem  |
+| PR title + body format (+ per-commit msgs)                        | CI (hard fail) — `.github/workflows/pr-format-check.yml`  |
 | `Closes-workitem:` link present at PR-merge time                  | honor system; the PR description's `## Workitem` carries it |
 
 ## Bypassing the hooks
@@ -106,4 +106,4 @@ Standard `git commit --no-verify` skips both hooks. Per the universal honesty ru
 
 ## When the conventions change
 
-Update `rules/git-workflow.md` AND the relevant hook script in the same commit so spec and enforcement stay aligned. Append a D-entry to `README.md` if the change is structural.
+Update `rules/git-workflow.md` AND the relevant enforcement script in the same commit so spec and enforcement stay aligned — that means the relevant `hooks/` script (local commit-time enforcement) and/or `.github/scripts/pr-format-check.sh` (PR-time CI enforcement), since the two share rules via the `COMMIT_REF` seam in `hooks/commit-msg`. Append a D-entry to `README.md` if the change is structural.

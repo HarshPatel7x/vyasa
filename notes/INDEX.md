@@ -6,6 +6,9 @@
 
 ---
 
+- [2026-06-01-pr-format-ci-enforcement.md](2026-06-01-pr-format-ci-enforcement.md) — Built, shipped, and live-verified server-side PR-format enforcement (`D20 — PR title + body format enforced via GitHub Actions CI`): a GitHub Actions check validating PR title + body sections + each non-merge commit message, server-side where the bypassable local `commit-msg` hook can't reach. Shipped via PR #12 (CI) and PR #13 (polish: `!cancelled()` to report all targets + `checkout@v5`); throwaway PR #14 closed-and-cleaned.
+  Lesson: a 3-agent debate (critic/improver/auditor) caught a real architecture bug on paper before any code — the `commit-msg` `Touches:` check reads the git staging index, which doesn't exist for an already-made commit in CI; the fix reused the hook via a 10-line `COMMIT_REF` seam, beating both "duplicate the rules" and "extract a shared library." Open factual questions (does the introducing PR self-run? is the repo pristine after the test?) were settled by tools, not assertion.
+
 - [2026-06-01-diff-verification-hook-live-trigger-verified.md](2026-06-01-diff-verification-hook-live-trigger-verified.md) — Verified the edit-verification hook pair fires live in a fresh session, closing the one caveat the build note deferred. Tested on a throwaway `/tmp` file: the NEW-file branch printed `[edit-verify] … +3 -0 (NEW file)` to the user's terminal (confirmed by screenshot), and the no-op branch (re-writing identical bytes) injected the "byte-identical… changed nothing on disk" note into the model's context.
   Lesson: the hook's two output channels are asymmetric — `systemMessage` reaches only the user's screen, `additionalContext` reaches only the model — so an assistant self-testing this hook can directly confirm *only* the no-op branch. Checking the on-disk snapshot artifacts proves nothing, since the Post hook's `cleanup()` deletes them whether or not anything fired.
 

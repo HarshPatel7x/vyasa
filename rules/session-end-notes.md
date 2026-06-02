@@ -41,7 +41,7 @@ If they approve, write a session-notes file in lecture / meeting-minutes style.
 
 ## INDEX update
 
-Same session as the notes file, add a one-line entry at the **top** of `notes/INDEX.md` (newest-first):
+Same session as the notes file, add a one-line entry at the **top** of `notes/README.md` (newest-first):
 
 ```
 - [YYYY-MM-DD-topic.md](YYYY-MM-DD-topic.md) — one-line topic

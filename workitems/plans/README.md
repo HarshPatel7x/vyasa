@@ -1,4 +1,4 @@
-# plans — index
+# plans
 
 > One plan per workitem. A plan is written and agreed **before** the workitem's branch is
 > cut — the **plan-before-build** gate in [`../../rules/workitems.md`](../../rules/workitems.md).

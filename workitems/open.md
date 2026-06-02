@@ -1,7 +1,7 @@
 # Workitems — Open
 
 > Live queue of pending work. One entry per item. Each links to its plan in
-> [`plans/`](plans/INDEX.md), or is marked `(no plan)` until one is written
+> [`plans/`](plans/README.md), or is marked `(no plan)` until one is written
 > (see the **plan-before-build** gate in [`../rules/workitems.md`](../rules/workitems.md)).
 > Completed items move to [`done.md`](done.md).
 

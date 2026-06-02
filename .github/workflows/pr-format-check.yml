@@ -1,0 +1,55 @@
+name: pr-format-check
+
+# Server-side enforcement of rules/git-workflow.md at the PR layer: validates the PR
+# title, the PR body, and every non-merge commit message in the PR. The validation logic
+# lives in .github/scripts/pr-format-check.sh (a thin wrapper here; decision A in
+# workitems/plans/pr-format-check.md). The commits step reuses hooks/commit-msg via the
+# COMMIT_REF seam, so CI and the local hook share one source of truth.
+
+on:
+  pull_request:
+    # `edited` is required so editing the title/body after open re-runs the check.
+    types: [opened, edited, synchronize, reopened]
+
+# Read-only token. Plain `pull_request` (NEVER pull_request_target): pull_request_target
+# would run with a writable token in the base-repo context against fork-controlled head
+# code — the classic privilege-escalation footgun. Plain pull_request has neither problem.
+permissions:
+  contents: read
+  pull-requests: read
+
+# Supersede in-flight runs for the same PR when a new event arrives.
+concurrency:
+  group: pr-format-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    # Pin the locale so perl's UTF-8 char counting matches the local hook.
+    env:
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
+    steps:
+      - name: Checkout (full history for commit-range validation)
+        uses: actions/checkout@v4
+        with:
+          # Need the full history so BASE..HEAD commit ranges resolve.
+          fetch-depth: 0
+
+      - name: Validate PR title
+        # Title passed via env (not inline ${{ }}) to avoid shell injection.
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: bash .github/scripts/pr-format-check.sh title
+
+      - name: Validate PR body
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: bash .github/scripts/pr-format-check.sh body
+
+      - name: Validate commit messages
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: bash .github/scripts/pr-format-check.sh commits

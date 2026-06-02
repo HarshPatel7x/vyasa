@@ -36,6 +36,19 @@ vyasa/
 ├── README.md                    # this file — full project bible + decisions log
 ├── .gitignore                   # ignores runs/, draft reports, OS junk
 │
+├── .github/                     # GitHub-side automation (CI)
+│   ├── README.md                # what the CI surface is + the COMMIT_REF-seam note
+│   ├── workflows/
+│   │   └── pr-format-check.yml  # enforces PR title/body + per-commit msgs server-side
+│   └── scripts/
+│       └── pr-format-check.sh   # the validation logic (title | body | commits)
+│
+├── hooks/                       # version-controlled git + Claude Code hooks
+│   ├── commit-msg               # validates commit message format (COMMIT_REF seam for CI)
+│   ├── pre-commit               # blocks direct commits on main
+│   ├── snapshot-before-edit.sh  # PreToolUse: snapshots a file before an edit
+│   └── verify-diff.sh           # PostToolUse: surfaces the real per-edit delta
+│
 ├── rules/                       # sharded project rules (router + shards)
 │   ├── INDEX.md                 # router: which shards load when
 │   ├── hygiene.md               # default-load: honesty, verification, context status
@@ -242,6 +255,21 @@ Companion behavioral additions (in `rules/hygiene.md`, items 5–6): a **push-ba
 **Activation caveat (verified, not assumed):** Claude Code snapshots hook config at startup and does **not** reliably hot-reload `.claude/settings.json` edits mid-session (no `/reload` command exists as of this writing) — confirmed empirically this build session: a hook added mid-session did not fire. The hooks therefore take effect only from the next fresh session. The hook *logic* was verified this session by piping hand-made Pre/Post JSON payloads directly into the scripts (22 cases: modify, new file, no-op, git-ignored, non-repo cwd, two-edits-one-turn, orphan-silent, oversize, malformed-JSON, counter-fallback — all pass); the genuine end-to-end live trigger is verified in the next session.
 
 **Collaborator trust model (verified via docs):** project-scope `command` hooks are not run silently in a fresh clone — Claude Code prompts for approval before executing them (the defense against a malicious hook committed to a repo). A collaborator cloning vyasa is asked to approve these two hooks on first use.
+
+### D20. PR title + body format enforced via GitHub Actions CI
+**Decision:** PR title and PR body format — previously honor-system only — are now enforced server-side by a GitHub Actions workflow, `.github/workflows/pr-format-check.yml`. The workflow is a thin wrapper over one hand-rolled script, `.github/scripts/pr-format-check.sh <mode>`, invoked as three named steps in one job so a red ✗ names which target failed: `title` (PR title against the same subject rules as `hooks/commit-msg` — type set, optional scope whitelist, ≤72 UTF-8 chars, no trailing period), `body` (all six required headings present — `## Summary`, `## Why`, `## Workitem`, `## Decisions touched`, `## Verification`, `## Followups` — presence only, order-agnostic, content not inspected), and `commits` (each non-merge commit message in `base..head`, validated by the real `hooks/commit-msg`). Runs on `pull_request` (`opened`, `edited`, `synchronize`, `reopened`) with a read-only token; the enforcement-table cell in `rules/git-workflow.md` is flipped from "honor system today" to "CI (hard fail)". Design and full audit trail: `workitems/plans/pr-format-check.md`.
+
+**Why:** The local `hooks/commit-msg` enforces *commit* message format but only runs locally and is bypassable (`--no-verify`, the GitHub web UI, or a clone that never ran the `core.hooksPath` setup), and **nothing** checked the PR title or body at all. CI at the PR layer cannot be bypassed by a local flag, closing the gap the original `D16 — PR / commit-message / PR-description conventions defined + commit validation enforced via hooks` left open (its enforcement table literally named PR-side CI as a queued workitem).
+
+**Why hand-rolled, not a third-party action (decision B):** the title and per-commit checks must stay byte-identical to the shell rules already enforced by `hooks/commit-msg`. A third-party title-only action would fragment that single source of truth and reintroduce drift — the exact failure mode `D16 — PR / commit-message / PR-description conventions defined + commit validation enforced via hooks` bundled spec + enforcement to prevent.
+
+**Why reuse the hook via a seam, not a copy (decision E-seam):** the CI `commits` step invokes the real `hooks/commit-msg` rather than duplicating its logic. The only part of that hook that needs the staging *index* (which a fresh CI checkout of an already-made commit does not have) is the `Touches: D<N>` block — `git diff --cached` and `git show :README.md`. Those two reads are routed through a `COMMIT_REF` indirection: unset → `:` (the index, local default, behavior byte-for-byte unchanged); set to `<sha>:` → the helpers resolve from that commit's tree. One file, one source of truth, no new library, local behavior preserved.
+
+**Merge commits exempt:** the `commits` step uses `git rev-list --no-merges`, because GitHub generates merge-commit subjects server-side and they cannot conform to Conventional Commits. vyasa uses real merge commits (not squash), so per-commit messages land on `main` and validating them is meaningful.
+
+**Security posture:** plain `pull_request` (never `pull_request_target`, which would run with a writable token against fork-controlled head code), read-only `permissions`, title/body passed via env vars (not inline `${{ }}` interpolation in the run script) to avoid shell injection, locale pinned to `C.UTF-8` so perl's UTF-8 character counting matches the local hook, and `fetch-depth: 0` so the commit-range validation resolves.
+
+**Verification (local — no Actions runner; `act`/`actionlint` not installed here):** the seamed hook reproduces pre-seam behavior byte-for-byte in default mode (10 good/bad cases, identical exit codes + messages), and CI mode (`COMMIT_REF=<sha>:`) resolves the `Touches:` README check from a real commit's tree (verified against commit `9b91257`, which carries `D19`). The CI script was driven with hand-made inputs across all three modes (good/bad titles incl. CRLF and >72-char, good/missing/empty bodies under `set -u`, and a `commits` range including a merge commit to confirm the exemption) — all exit codes as expected. The introducing PR is made fully conformant so it passes regardless of whether GitHub runs the new workflow on its own PR (an unresolved factual point, confirmed empirically when it first runs).
 
 ---
 

@@ -14,6 +14,8 @@
   - Any `D<N>` mention not followed inline by ` — <title>` (em-dash U+2014)
   - `Touches: D<N> — <title>` footer when README.md is not staged, or when the footer's title does not match the staged README's `### D<N>. <title>` heading
 
+  **`COMMIT_REF` seam (so CI can reuse this hook):** the only part of `commit-msg` that needs the staging *index* is the `Touches:` block — `git diff --cached` (which files changed) and `git show :README.md` (the README blob). An already-made commit in a fresh CI checkout has no index, so those reads are routed through a `COMMIT_REF` indirection: unset → `:` (the index, the local default — behavior is byte-for-byte unchanged); set to `<sha>:` → the helpers `readme_changed`/`readme_blob` resolve the changed files and the README blob from that commit's tree instead. The PR-format CI (`.github/scripts/pr-format-check.sh commits`) invokes this same hook with `COMMIT_REF="<sha>:"` for each non-merge commit in a PR, so the local hook and the server-side check share one source of truth and cannot drift. See README decision **D20 — PR title + body format enforced via GitHub Actions CI** and the design in `workitems/plans/pr-format-check.md`.
+
 - **`pre-commit`** — blocks direct commits on `main` (per branch-per-workitem). Allows merge commits in progress (e.g., from `git pull`).
 
 ### Claude Code hooks (wired via `.claude/settings.json`)

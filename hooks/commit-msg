@@ -6,6 +6,28 @@ set -euo pipefail
 
 msg_file="$1"
 
+# --- COMMIT_REF seam: lets CI reuse this hook against an already-made commit ---
+# Locally (default), COMMIT_REF is ":" — the staging index, so the Touches checks
+# below read the staged README exactly as before (behavior byte-for-byte unchanged).
+# In CI, the PR-format workflow sets COMMIT_REF="<sha>:" so the same checks resolve
+# the changed files and the README blob from that commit's tree instead of an index
+# (which does not exist for an already-made commit in a fresh checkout).
+COMMIT_REF="${COMMIT_REF:-:}"
+
+# Files changed by the commit/index referenced by COMMIT_REF.
+readme_changed() {
+  if [[ "$COMMIT_REF" == ":" ]]; then
+    git diff --cached --name-only
+  else
+    git diff-tree --no-commit-id --name-only -r "${COMMIT_REF%:}"
+  fi
+}
+
+# README.md blob as of COMMIT_REF (":README.md" for the index, "<sha>:README.md" for a commit).
+readme_blob() {
+  git show "${COMMIT_REF}README.md" 2>/dev/null
+}
+
 # Strip git's comment lines and trailing blank lines
 clean_msg="$(grep -v '^#' "$msg_file" | sed -e :a -e '/^$/{$d;N;ba' -e '}')"
 subject="$(echo "$clean_msg" | head -n 1)"
@@ -86,8 +108,8 @@ fi
 # --- Touches: D<N> footer correctness ---
 touches_lines="$(printf '%s' "$clean_msg" | grep -E '^Touches: D[0-9]+ — ' || true)"
 if [[ -n "$touches_lines" ]]; then
-  # README.md must be in the staged changes for this commit
-  if ! git diff --cached --name-only | grep -qx 'README.md'; then
+  # README.md must be among the files this commit changes
+  if ! readme_changed | grep -qx 'README.md'; then
     fail "'Touches: D<N> — …' footer present but README.md is not in this commit's staged changes"
   fi
 
@@ -95,7 +117,7 @@ if [[ -n "$touches_lines" ]]; then
     if [[ "$line" =~ ^Touches:\ D([0-9]+)\ —\ (.+)$ ]]; then
       d_num="${BASH_REMATCH[1]}"
       footer_title="${BASH_REMATCH[2]}"
-      readme_title="$(git show ":README.md" 2>/dev/null | grep -E "^### D${d_num}\. " | head -n 1 | sed -E "s/^### D${d_num}\. //")"
+      readme_title="$(readme_blob | grep -E "^### D${d_num}\. " | head -n 1 | sed -E "s/^### D${d_num}\. //")"
       if [[ -z "$readme_title" ]]; then
         fail "footer references D${d_num} but no '### D${d_num}. …' heading exists in staged README.md"
       fi

@@ -11,7 +11,8 @@ Every workitem branch ships via a GitHub pull request.
 
 - One workitem → one branch → one PR. Branch name: `workitem/<short-name>`.
 - Trivial-bundle exception per `rules/workitems.md` allows multiple items per branch by explicit in-conversation decision; in that case, one PR still, listing all items.
-- Self-merge is fine. No required review delay, no approval gate — this is a solo project. The PR is the artifact (the rollback unit, the description carrier, the diff view), not the gate.
+- **The repo merges via squash** (not merge commits): the squash commit's subject is the PR title (already validated by the PR-format CI), its body is blank, and the merged branch auto-deletes. So one PR → one structured, already-validated commit on `main`, and the `Merge pull request #N…` wording never appears. Merge with `gh pr merge --squash --delete-branch` or the GitHub web "Squash and merge" button — both produce the same result because the repo settings make squash the only strategy. (GitHub appends ` (#N)` to the subject on `main`, giving free PR traceability.)
+- Self-merge is fine. No required review delay, no approval gate — this is a solo project. The PR is the artifact: the squashed commit it produces is the rollback unit (one atomic commit on `main`), and the PR itself is the description carrier and diff view — not a gate.
 - **Direct commits to `main` are not allowed.** Enforced by `hooks/pre-commit`. The bootstrap exception in earlier `rules/workitems.md` versions is retired.
 
 ## Commit message format

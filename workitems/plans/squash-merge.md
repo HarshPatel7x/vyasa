@@ -104,12 +104,14 @@ to:
 - **A safety net if the strategy ever reverts** to merge commits.
 - It costs nothing extra to keep — it is already wired and passing.
 
-### 3. Trailer loss on `main`
+### 3. Trailer handling on `main`
 
-After squash, the `Touches: D<N>` and `Co-Authored-By` trailers on the in-PR commits do **not** appear
-on `main` — only the PR title (the squash subject) and a blank body land there. The local
-`hooks/commit-msg` still enforces `Touches:` at commit time, so the *discipline* holds; only the
-mainline *artifact* loses the trailer. Accepted as a cost of the clean-mainline goal.
+After squash, GitHub auto-preserves `Co-authored-by` (it derives co-author trailers from the
+squashed commits), so AI co-authorship **does** land on `main` — but non-authorship trailers like
+`Touches: D<N>` are **not** carried over (only the PR title, as the squash subject, and a blank body
+land there). The local `hooks/commit-msg` still enforces `Touches:` at commit time, so the
+*discipline* holds; only the mainline `Touches:` *artifact* is lost. Accepted as a cost of the
+clean-mainline goal.
 
 ### 4. README's D20 entry carries a now-false sentence — annotate, don't delete
 

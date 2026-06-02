@@ -50,9 +50,12 @@ that "GitHub is the only durability layer," so the PR page is the description's 
      GitHub Actions CI` entry literally said "vyasa uses real merge commits (not squash)…" —
      squash falsifies it. Annotated (not deleted) with a `*(Superseded by D21 …)*` note, same
      precedent as the existing D15→D17 supersede annotation.
-   - **Trailer loss:** after squash, `Touches: D<N>` and `Co-Authored-By` trailers on in-PR
-     commits no longer reach `main` (the local `hooks/commit-msg` still enforces `Touches:` at
-     commit time, so the discipline holds — only the mainline artifact is lost).
+   - **Trailer handling:** after squash, GitHub auto-preserves `Co-authored-by` (it derives
+     co-author trailers from the squashed commits), so AI co-authorship *does* reach `main`; only
+     non-authorship trailers like `Touches: D<N>` are dropped. The local `hooks/commit-msg` still
+     enforces `Touches:` at commit time, so the discipline holds — only the mainline `Touches:`
+     artifact is lost. (Confirmed empirically: PR #17's squash commit on `main` carried its
+     `Co-authored-by` line — which is what corrected this claim.)
    - **Missing ledger move** and the `git-workflow.md` "PR is the rollback unit" line — both
      folded into the touch-list.
 2. **Survived a mid-task tool lockout.** Partway through, the shell's working-directory handle

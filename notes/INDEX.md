@@ -6,6 +6,9 @@
 
 ---
 
+- [2026-06-01-diff-verification-hook-build.md](2026-06-01-diff-verification-hook-build.md) — Built and shipped the edit-verification hook pair (snapshot-before-edit + verify-diff) planned on 2026-05-31; added D19 — Project-scope Claude Code Pre/PostToolUse hooks for edit verification; merged via PR #9. Discovered by testing that Claude Code does not hot-reload `settings.json` hooks, so logic was verified by 22 hand-made-JSON cases + three audit rounds, with the live trigger deferred to the next fresh session.
+  Lesson: a documented hook is not a live hook (the key finding came from trying it, not trusting docs); and "audit until zero faults" earns its keep on round 1 — the first auditor caught a 7×-over-limit output bug and a path-traversal hole the in-house tests missed, while later rounds mostly confirmed.
+
 - [2026-05-31-edit-checker-plan-and-voice-rule.md](2026-05-31-edit-checker-plan-and-voice-rule.md) — Planned the edit-checker (diff-verification) hook through three architect audits — the first caught a blocking flaw (git-diff shows cumulative, not per-edit, delta), reworked to a before/after snapshot pair; saved unmerged for a fresh-session build. Then reinforced the plain-English rule after the assistant drifted into heavy jargon live (rule was loaded the whole time): added a `plain` interrupt, a before-sending self-check, and a capped glossary; merged via PR #7.
   Lesson: a loaded rule is not an obeyed rule — fixed-position rituals (the recap) held while free-prose intentions drifted, so the fix adds active handles, not louder text. Script enforcement considered and dropped (general case infeasible, narrow case high-false-positive + unverified hook visibility).
 

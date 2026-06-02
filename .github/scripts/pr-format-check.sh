@@ -4,8 +4,11 @@
 # One script, three modes (invoked as three separate workflow steps so a red ✗ names
 # which target failed):
 #
-#   title   — validate $PR_TITLE against the SAME subject rules as hooks/commit-msg
-#             (type set, optional scope whitelist, ≤72 UTF-8 chars, no trailing period).
+#   title   — validate $PR_TITLE by running the real hooks/commit-msg against the
+#             title as a one-line message (single source of truth). A one-line
+#             subject exercises the type set, optional scope whitelist, ≤72 UTF-8
+#             chars, no-trailing-period, AND inline D-code expansion checks; the
+#             hook's body-line and Touches: checks are inert with no body/footer.
 #   body    — assert all six required headings are present in $PR_BODY (presence only,
 #             order-agnostic, content not inspected).
 #   commits — validate each non-merge commit message in $BASE_SHA..$HEAD_SHA with the
@@ -24,44 +27,11 @@ mode="${1:-}"
 repo_root="$(git rev-parse --show-toplevel)"
 commit_msg_hook="${repo_root}/hooks/commit-msg"
 
-# Same whitelists as hooks/commit-msg.
-allowed_types_re='feat|fix|docs|refactor|chore|test|eval'
-allowed_scopes_re='rules|notes|readme|workitems|hooks|cli|skills|fixtures|runs|reports'
-
 fail() {
   echo "" >&2
   echo "✗ pr-format-check ($mode): $1" >&2
   echo "" >&2
   exit 1
-}
-
-# Validate a single subject line against the commit-msg subject rules.
-# Used for the PR title. Echoes nothing on success; calls fail() on violation.
-validate_subject() {
-  local subject="$1"
-
-  local subject_re="^(${allowed_types_re})(\(([a-z-]+)\))?: [^[:space:]].*"
-  if ! [[ "$subject" =~ $subject_re ]]; then
-    fail "subject does not match '<type>(<scope>): <summary>' or type not in {${allowed_types_re//|/, }}.
-  Got: $subject"
-  fi
-
-  if [[ "$subject" =~ ^[a-z]+\(([a-z-]+)\): ]]; then
-    local scope="${BASH_REMATCH[1]}"
-    if ! [[ "$scope" =~ ^(${allowed_scopes_re})$ ]]; then
-      fail "scope '$scope' is not in {${allowed_scopes_re//|/, }}"
-    fi
-  fi
-
-  local subject_len
-  subject_len="$(printf '%s' "$subject" | perl -CSD -ne 'chomp; print length($_)')"
-  if (( subject_len > 72 )); then
-    fail "subject is ${subject_len} chars (max 72): $subject"
-  fi
-
-  if [[ "$subject" =~ \.$ ]]; then
-    fail "subject ends with a period; drop it"
-  fi
 }
 
 case "$mode" in
@@ -74,7 +44,19 @@ case "$mode" in
     if [[ -z "$title" ]]; then
       fail "PR title is empty"
     fi
-    validate_subject "$title"
+    if [[ ! -x "$commit_msg_hook" ]]; then
+      fail "commit-msg hook not found or not executable: $commit_msg_hook"
+    fi
+    # Reuse the real hook against the title as a one-line message (single source of
+    # truth). Do NOT set COMMIT_REF — a title has no Touches footer, so the hook's
+    # index/commit resolution never runs. The if-guard keeps set -e from aborting
+    # before we can emit the failure; the hook already printed a clear reason.
+    title_msg_file="$(mktemp)"
+    trap 'rm -f "$title_msg_file"' EXIT
+    printf '%s\n' "$title" > "$title_msg_file"
+    if ! bash "$commit_msg_hook" "$title_msg_file"; then
+      fail "PR title failed commit-msg validation (see message above)"
+    fi
     echo "✓ PR title OK: $title"
     ;;
 

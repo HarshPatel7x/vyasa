@@ -30,7 +30,7 @@
     presence only, order-agnostic, content not inspected.
   - `commits` — runs the **real `hooks/commit-msg`** over each non-merge commit in
     `$BASE_SHA..$HEAD_SHA`, in CI mode (`COMMIT_REF="<sha>:"`) so its `Touches: D<N>` footer
-    check resolves `README.md` from each commit's own tree. Merge commits are exempt
+    check resolves `docs/decisions.md` from each commit's own tree. Merge commits are exempt
     (`git rev-list --no-merges`) — GitHub generates their subjects server-side.
 
 ## How CI reuses the local hook (the COMMIT_REF seam)
@@ -40,18 +40,17 @@ The CI commits-check does **not** reimplement the commit-message rules — it in
 `Touches:` block's reliance on the staging *index* (which does not exist for an already-made
 commit in a fresh checkout). The hook exposes a `COMMIT_REF` seam: unset → `:` (the index,
 local default, behavior unchanged); set to `<sha>:` → the hook resolves changed files and the
-`README.md` blob from that commit's tree instead. See `hooks/README.md` and the design in
+`docs/decisions.md` blob from that commit's tree instead. See `hooks/README.md` and the design in
 `workitems/plans/pr-format-check.md` (decision E-seam).
 
 ## Note on the README convention
 
-`rules/readme-convention.md` literally says *every* directory carries its own `README.md`.
-This directory follows the `hooks/` precedent instead: one README for the whole CI surface,
-not one per subdirectory (`workflows/`, `scripts/` are not separately documented). The
-queued "Tweak `rules/readme-convention.md`" workitem is exactly the change that blesses this
-(README only at the project head or directories worked in directly; sharded subdirs use an
-index or a parent README). Documented here rather than silently skipped — see decision C in
-`workitems/plans/pr-format-check.md`.
+`rules/readme-convention.md` requires every directory to carry a `README.md`. Under that rule
+`.github/` is a **leaf** directory (it holds CI artifacts, not sub-docs), so this one README is
+the documentation for the whole CI surface — `workflows/` and `scripts/` are not separately
+documented. This was settled by `D22 — README-as-router: retire INDEX.md, shard root README into
+docs/`, whose leaf-vs-routing trichotomy makes a single leaf README the correct shape here; it had
+been flagged provisionally beforehand (see decision C in `workitems/plans/pr-format-check.md`).
 
 ## Local testing
 

@@ -6,6 +6,9 @@
 
 ---
 
+- [2026-06-01-diff-verification-hook-live-trigger-verified.md](2026-06-01-diff-verification-hook-live-trigger-verified.md) — Verified the edit-verification hook pair fires live in a fresh session, closing the one caveat the build note deferred. Tested on a throwaway `/tmp` file: the NEW-file branch printed `[edit-verify] … +3 -0 (NEW file)` to the user's terminal (confirmed by screenshot), and the no-op branch (re-writing identical bytes) injected the "byte-identical… changed nothing on disk" note into the model's context.
+  Lesson: the hook's two output channels are asymmetric — `systemMessage` reaches only the user's screen, `additionalContext` reaches only the model — so an assistant self-testing this hook can directly confirm *only* the no-op branch. Checking the on-disk snapshot artifacts proves nothing, since the Post hook's `cleanup()` deletes them whether or not anything fired.
+
 - [2026-06-01-diff-verification-hook-build.md](2026-06-01-diff-verification-hook-build.md) — Built and shipped the edit-verification hook pair (snapshot-before-edit + verify-diff) planned on 2026-05-31; added D19 — Project-scope Claude Code Pre/PostToolUse hooks for edit verification; merged via PR #9. Discovered by testing that Claude Code does not hot-reload `settings.json` hooks, so logic was verified by 22 hand-made-JSON cases + three audit rounds, with the live trigger deferred to the next fresh session.
   Lesson: a documented hook is not a live hook (the key finding came from trying it, not trusting docs); and "audit until zero faults" earns its keep on round 1 — the first auditor caught a 7×-over-limit output bug and a path-traversal hole the in-house tests missed, while later rounds mostly confirmed.
 

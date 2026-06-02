@@ -18,12 +18,50 @@
 
 ### Claude Code hooks (wired via `.claude/settings.json`)
 
-None currently. Default-rule loading used to live here as a `SessionStart` hook
-(`load-default-rules.sh`), but that hook hit Claude Code's ~10K-char hook-stdout cap and
-only ~1 of the 6 shards reached context. It was replaced by a `CLAUDE.md` → `@rules/INDEX.md`
-→ shard `@import` chain, which expands the full shard bodies at launch with no cap. See
-README decision **D18 — Rule-loading moves from SessionStart hook to CLAUDE.md @import** and
-`rules/INDEX.md`. (`.claude/settings.json` is now an empty `{}`.)
+**Edit-verification pair** — `snapshot-before-edit.sh` (PreToolUse) + `verify-diff.sh`
+(PostToolUse), matcher `Edit|Write|MultiEdit`. Together they surface the **exact delta a single
+edit made**, computed from the file's real before/after bytes — independent of anything the model
+claims. When a reported-successful edit leaves the file byte-identical, `verify-diff.sh` also
+injects a factual, neutral note into the model's context. See README decision
+**D19 — Project-scope Claude Code Pre/PostToolUse hooks for edit verification** and the full design
+in `workitems/plans/diff-verification-hook.md`.
+
+How the pair works:
+
+- **`snapshot-before-edit.sh`** fires *before* the edit, copies the target file's current bytes to
+  `${TMPDIR}/claude-diff-verify/<session_id>/<path-hash>.<tool_use_id>.snap` (outside the repo, so
+  snapshots never enter `git diff` or get committed), plus a `.meta` sidecar. New files get an empty
+  baseline marked `existed=no`. Files over 5 MB are skipped (a guard, since the hook also fires on
+  large non-repo / git-ignored files).
+- **`verify-diff.sh`** fires *after* the edit, diffs the snapshot against the current bytes, emits a
+  compact summary (hard-capped well under the 10,000-char hook-output limit), and deletes its own
+  snapshot. No matching snapshot → it stays silent.
+
+Both are **fail-open**: any internal error emits nothing and exits 0 — a broken verifier must never
+block a real edit. Snapshots are written with raw shell (`cp`/redirection) only, never Claude's
+Edit/Write tools, so the snapshot write cannot re-trigger the hooks (no infinite loop). `git` is not
+involved at any point, so the diff works for tracked, untracked, and git-ignored files alike.
+
+`NotebookEdit` is deliberately **excluded** from the matcher: it carries `notebook_path` (not
+`file_path`) and its `.ipynb` payloads are JSON whose raw diffs are noisy; this repo has no
+notebooks. `Edit`, `Write`, and `MultiEdit` all expose `file_path`, so the pair handles them
+uniformly.
+
+> **Activation requires a fresh session.** Claude Code snapshots hook config at startup and does not
+> reliably hot-reload edits to `.claude/settings.json` mid-session (there is no `/reload` command as
+> of this writing). After these hooks are first added — or after any change to them — start a new
+> Claude Code session for them to take effect.
+
+> **Collaborator trust model.** Project-scope `command` hooks in a cloned repo are **not** run
+> silently. Claude Code prompts for approval before executing project hooks (the defense against a
+> malicious hook committed to a repo). A collaborator cloning vyasa will be asked to approve these
+> two hooks on first use; they do not auto-run untrusted.
+
+Prior Claude Code hook history: default-rule loading once lived here as a `SessionStart` hook
+(`load-default-rules.sh`), but it hit Claude Code's ~10K-char hook-stdout cap and only ~1 of the 6
+shards reached context. It was replaced by a `CLAUDE.md` → `@rules/INDEX.md` → shard `@import` chain,
+which expands the full shard bodies at launch with no cap. See README decision
+**D18 — Rule-loading moves from SessionStart hook to CLAUDE.md @import** and `rules/INDEX.md`.
 
 ## One-time setup (per clone)
 

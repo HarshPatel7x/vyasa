@@ -6,6 +6,9 @@
 
 ---
 
+- [2026-06-02-readme-router-convention-build.md](2026-06-02-readme-router-convention-build.md) — Built and shipped the README-as-router change (PR #19, squash-merged to `main` as `6192cd7`): retired `INDEX.md` for one `README.md` everywhere, sharded the root README into `docs/`, relocated the Decisions log to `docs/decisions.md` and re-pointed the `Touches: D<N>` hook + CI seam to it, logged `D22 — README-as-router: retire INDEX.md, shard root README into docs/`. Every gate verified incl. a live fresh-session launch-load probe.
+  Lesson: a twice-reviewed signed-off plan still wasn't finished — the build was a third review pass that caught three more gaps (a logging-commit subject that would fail its own hook, two stale `voice.md` pointers, a missed hook comment); guard every shell command against the sandbox's `set -e`; relocate verbatim by extraction-plus-diff so integrity is provable; and some checks (the `@import` rename) only a fresh session can run.
+
 - [2026-06-02-readme-router-convention-plan.md](2026-06-02-readme-router-convention-plan.md) — Decided and twice-reviewed a plan to retire `INDEX.md`, make every directory carry one `README.md` (a leaf / routing / mixed trichotomy), and shard the 304-line root README into `docs/` with the decisions log moved to `docs/decisions.md` so the only append-only section stops re-bloating the entry point. Reframed from a one-line `readme-convention` tweak by the user's question "could I apply this to every project?"
   Lesson: two rounds of three parallel agents earned their keep on a genuinely complex change — round 1 caught the blocker (moving the decisions log silently breaks the `Touches: D<N>` hook and the CI that reuses it), round 2 caught a miscounted edit list and two stale files a grep-sweep would miss. Overkill for a one-paragraph tweak; right-sized once the reframing grew it.
 

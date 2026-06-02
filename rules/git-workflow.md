@@ -43,7 +43,7 @@ Standard: Conventional Commits with vyasa-specific scopes. Enforced by `hooks/co
 Footers follow standard git trailer syntax: `<Token>: <value>` where `<Token>` is a single CamelCase or hyphenated word (no spaces). The hook exempts any line matching this shape from the body line-length cap.
 
 - **`Closes-workitem: <verbatim bullet text from workitems/open.md (or workitems/done.md)>`** — optional on individual commits; required at PR level via the `## Workitem` section of the PR description.
-- **`Touches: D<N> — <title verbatim from README>`** — required when the commit creates or modifies a structural decision in `README.md`'s Decisions log. The hook verifies that `README.md` is in the commit AND that the footer's title exactly matches the heading title for `D<N>` in the staged `README.md`.
+- **`Touches: D<N> — <title verbatim from docs/decisions.md>`** — required when the commit creates or modifies a structural decision in the Decisions log (`docs/decisions.md`). The hook verifies that `docs/decisions.md` is in the commit AND that the footer's title exactly matches the heading title for `D<N>` in the staged `docs/decisions.md`.
 
 ### `Co-Authored-By` trailer (honor system)
 
@@ -72,7 +72,7 @@ Same shape as a commit subject: `<type>(<scope>): <summary>`. Single-commit PR �
 <verbatim quote(s) of the workitems/ ledger line(s) this closes — from workitems/open.md or workitems/done.md>
 
 ## Decisions touched
-<list of `D<N> — title-verbatim-from-README`, or "none">
+<list of `D<N> — title verbatim from docs/decisions.md`, or "none">
 
 ## Verification
 <for rules: "self-applies from <date>"; for code: tests added or manual steps to confirm>
@@ -90,7 +90,7 @@ Same shape as a commit subject: `<type>(<scope>): <summary>`. Single-commit PR �
 | Subject ≤ 72 chars, no trailing period                            | hook (hard fail)                                         |
 | Body line ≤ 100 chars (URLs exempt)                               | hook (hard fail)                                         |
 | Inline D-code expansion in commit messages                        | hook (hard fail)                                         |
-| `Touches: D<N>` footer correctness (README staged + title match)  | hook (hard fail)                                         |
+| `Touches: D<N>` footer correctness (docs/decisions.md staged + match) | hook (hard fail)                                     |
 | No direct commits to `main`                                       | hook (hard fail)                                         |
 | `Co-Authored-By` trailer when AI assisted                         | honor system                                             |
 | Imperative subject mood                                           | honor system                                             |
@@ -107,4 +107,4 @@ Standard `git commit --no-verify` skips both hooks. Per the universal honesty ru
 
 ## When the conventions change
 
-Update `rules/git-workflow.md` AND the relevant enforcement script in the same commit so spec and enforcement stay aligned — that means the relevant `hooks/` script (local commit-time enforcement) and/or `.github/scripts/pr-format-check.sh` (PR-time CI enforcement), since the two share rules via the `COMMIT_REF` seam in `hooks/commit-msg`. Append a D-entry to `README.md` if the change is structural.
+Update `rules/git-workflow.md` AND the relevant enforcement script in the same commit so spec and enforcement stay aligned — that means the relevant `hooks/` script (local commit-time enforcement) and/or `.github/scripts/pr-format-check.sh` (PR-time CI enforcement), since the two share rules via the `COMMIT_REF` seam in `hooks/commit-msg`. Append a D-entry to `docs/decisions.md` if the change is structural.

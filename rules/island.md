@@ -31,8 +31,8 @@ GitHub is the only durability layer. The project can be moved, cloned, or shared
 
 ---
 
-## README is the project bible
+## The README + docs/ tree is the project bible
 
-`README.md` is the project bible. Every structural decision and its rationale lives there. If the project is wiped and recreated from `README.md` alone, the new copy should still know what it is, why it exists, what's inside, and why.
+The `README.md` + `docs/` tree is the project bible. Every structural decision and its rationale lives in `docs/decisions.md`. If the project is wiped and recreated from the `README.md` + `docs/` tree alone, the new copy should still know what it is, why it exists, what's inside, and why.
 
-When a structural decision is made or changed in a session, the README decisions log gets updated **in the same session**. See [readme-decisions-log.md](readme-decisions-log.md) for the trigger.
+When a structural decision is made or changed in a session, the decisions log in `docs/decisions.md` gets updated **in the same session**. See [readme-decisions-log.md](readme-decisions-log.md) for the trigger.

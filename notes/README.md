@@ -6,6 +6,9 @@
 
 ---
 
+- [2026-06-03-skeleton-spinout-and-vyasa-unmeasured.md](2026-06-03-skeleton-spinout-and-vyasa-unmeasured.md) — Extracted a generic, self-configuring project skeleton from vyasa's conventions and built it as its OWN repo at `~/Desktop/Harsh/skeleton` (local only, not pushed); vyasa left untouched by design, after a reviewer flagged that a general scaffolder inside the skill-measurement island would muddy its identity.
+  Lesson: vyasa has never measured itself (the `fixtures`/`runs`/`reports`/`skills` dirs are still empty), and four review rounds converged that only the navigation spine (thin-entry + README-router + decisions-log) transfers — the git/hook/CI/D-code enforcement is vyasa-specific bureaucracy that breaks in a generic or non-code project. Captured the parked eval design (measure rule-adherence + navigation cost across lean-vs-heavy arms, not "one file vs many") so the "prove it works" thread isn't lost.
+
 - [2026-06-02-readme-router-convention-build.md](2026-06-02-readme-router-convention-build.md) — Built and shipped the README-as-router change (PR #19, squash-merged to `main` as `6192cd7`): retired `INDEX.md` for one `README.md` everywhere, sharded the root README into `docs/`, relocated the Decisions log to `docs/decisions.md` and re-pointed the `Touches: D<N>` hook + CI seam to it, logged `D22 — README-as-router: retire INDEX.md, shard root README into docs/`. Every gate verified incl. a live fresh-session launch-load probe.
   Lesson: a twice-reviewed signed-off plan still wasn't finished — the build was a third review pass that caught three more gaps (a logging-commit subject that would fail its own hook, two stale `voice.md` pointers, a missed hook comment); guard every shell command against the sandbox's `set -e`; relocate verbatim by extraction-plus-diff so integrity is provable; and some checks (the `@import` rename) only a fresh session can run.
 

@@ -22,7 +22,7 @@ readme_changed() {
   if [[ "$COMMIT_REF" == ":" ]]; then
     git diff --cached --name-only
   else
-    git diff-tree --no-commit-id --name-only -r "${COMMIT_REF%:}"
+    git diff-tree --no-commit-id --name-only --root -r "${COMMIT_REF%:}"
   fi
 }
 

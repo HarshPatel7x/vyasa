@@ -33,7 +33,7 @@ decisions_blob() {
 }
 
 # Strip git's comment lines and trailing blank lines
-clean_msg="$(grep -v '^#' "$msg_file" | sed -e :a -e '/^$/{$d;N;ba' -e '}')"
+clean_msg="$(grep -v '^#' "$msg_file" | sed -e :a -e '/^$/{$d;N;ba' -e '}' || true)"
 subject="$(echo "$clean_msg" | head -n 1)"
 
 allowed_types_re='feat|fix|docs|refactor|chore|test|eval'

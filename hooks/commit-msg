@@ -121,7 +121,7 @@ if [[ -n "$touches_lines" ]]; then
     if [[ "$line" =~ ^Touches:\ D([0-9]+)\ —\ (.+)$ ]]; then
       d_num="${BASH_REMATCH[1]}"
       footer_title="${BASH_REMATCH[2]}"
-      readme_title="$(decisions_blob | grep -E "^### D${d_num}\. " | head -n 1 | sed -E "s/^### D${d_num}\. //")"
+      readme_title="$(decisions_blob | grep -E "^### D${d_num}\. " | head -n 1 | sed -E "s/^### D${d_num}\. //" || true)"
       if [[ -z "$readme_title" ]]; then
         fail "footer references D${d_num} but no '### D${d_num}. …' heading exists in staged docs/decisions.md"
       fi
